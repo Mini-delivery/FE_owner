@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Mini Delivery</string>
+    <string name="order_summary">연어 샐러드 외 1개</string>
+    <string name="order_address">삼선동 SK뷰 아파트 1301동 1804호</string>
+    <string name="order_price">결제완료 %s원</string>
 </resources>
