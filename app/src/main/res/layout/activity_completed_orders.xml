@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,37 +10,18 @@
         android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="주문접수"
+        android:text="배달완료"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
-        android:layout_marginTop="16dp">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="처리중"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="배달중"/>
-
-    </com.google.android.material.tabs.TabLayout>
-
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chipGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/tabLayout"
+        app:layout_constraintTop_toBottomOf="@id/titleTextView"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp">
 
@@ -56,7 +38,6 @@
     </com.google.android.material.chip.ChipGroup>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/orderCardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toBottomOf="@id/chipGroup"
@@ -70,25 +51,15 @@
             android:padding="16dp">
 
             <TextView
-                android:id="@+id/timeTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="15:00"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
-
-            <TextView
                 android:id="@+id/orderSummaryTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="연어 샐러드 외 1개"
-                android:textSize="16sp"
-                app:layout_constraintTop_toBottomOf="@id/timeTextView"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/acceptButton"
-                android:layout_marginTop="8dp"/>
+                app:layout_constraintEnd_toStartOf="@id/completedButton"/>
 
             <TextView
                 android:id="@+id/addressTextView"
@@ -98,38 +69,26 @@
                 android:textSize="14sp"
                 app:layout_constraintTop_toBottomOf="@id/orderSummaryTextView"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/acceptButton"
-                android:layout_marginTop="16dp"/>
-
-            <TextView
-                android:id="@+id/paymentStatusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="결제완료"
-                android:textSize="14sp"
-                android:textColor="#4CAF50"
-                app:layout_constraintTop_toBottomOf="@id/addressTextView"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/completedButton"
                 android:layout_marginTop="8dp"/>
 
             <TextView
                 android:id="@+id/priceTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="21,200원"
+                android:text="결제완료 21,200원"
                 android:textSize="14sp"
-                android:textStyle="bold"
                 app:layout_constraintTop_toBottomOf="@id/addressTextView"
-                app:layout_constraintStart_toEndOf="@id/paymentStatusTextView"
-                android:layout_marginStart="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/completedButton"
                 android:layout_marginTop="8dp"/>
 
             <Button
-                android:id="@+id/acceptButton"
+                android:id="@+id/completedButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="접수"
-                android:backgroundTint="#FFA000"
+                android:text="배달완료"
+                android:backgroundTint="#000000"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
