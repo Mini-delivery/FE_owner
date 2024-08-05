@@ -3,14 +3,18 @@ package com.example.minidelivery
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.webkit.WebSettings
+import android.webkit.WebView
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 
 class MainActivity : AppCompatActivity() {
+    // 뷰 요소들 선언
     private lateinit var acceptButton: Button
     private lateinit var tabLayout: TabLayout
     private lateinit var timeTextView: TextView
@@ -20,22 +24,25 @@ class MainActivity : AppCompatActivity() {
     private lateinit var priceTextView: TextView
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var orderCardView: View
-    private val processingOrders = mutableListOf<Order>()
-    private val deliveringOrders = mutableListOf<Order>()
-    private var currentOrder: Order? = null
+    private lateinit var webView: WebView
+    private val processingOrders = mutableListOf<Order>() // 처리 중인 주문 목록
+    private val deliveringOrders = mutableListOf<Order>() // 배달 중인 주문 목록
+    private var currentOrder: Order? = null // 현재 표시 중인 주문
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main) // 레이아웃 설정
 
-        initViews()
-        setupListeners()
-        loadInitialData()
+        initViews() // 뷰 초기화
+        setupListeners() // 리스너 설정
+        loadInitialData() // 초기 데이터 로드
 
-        bottomNavigation.selectedItemId = R.id.nav_home
+        bottomNavigation.selectedItemId = R.id.nav_home // 홈 메뉴 아이템 선택
+
     }
 
     private fun initViews() {
+        // 뷰 요소들 초기화
         acceptButton = findViewById(R.id.acceptButton)
         tabLayout = findViewById(R.id.tabLayout)
         timeTextView = findViewById(R.id.timeTextView)
@@ -47,20 +54,14 @@ class MainActivity : AppCompatActivity() {
         orderCardView = findViewById(R.id.orderCardView)
     }
 
-    private fun navigateToCompletedOrders() {
-        val intent = Intent(this, CompletedOrdersActivity::class.java)
-        startActivity(intent)
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out)
-    }
-
     private fun setupListeners() {
-        acceptButton.setOnClickListener { handleAcceptButtonClick() }
+        acceptButton.setOnClickListener { handleAcceptButtonClick() } // 주문 접수 버튼 클릭 리스너
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
             override fun onTabSelected(tab: TabLayout.Tab?) {
                 when (tab?.position) {
-                    0 -> loadProcessingOrders()
-                    1 -> loadDeliveringOrders()
+                    0 -> loadProcessingOrders() // 처리 중인 주문 로드
+                    1 -> loadDeliveringOrders() // 배달 중인 주문 로드
                 }
             }
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
@@ -70,19 +71,19 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    // Handle home navigation
+                    navigateToHome() // 홈으로 이동
                     true
                 }
                 R.id.nav_history -> {
-                    navigateToCompletedOrders()
+                    navigateToCompletedOrders() // 완료된 주문으로 이동
                     true
                 }
-                R.id.nav_sales -> {
-                    // Handle sales navigation
+                R.id.nav_delivery -> {
+                    navigateToManageDelivery() // 배달 관리로 이동
                     true
                 }
                 R.id.nav_calendar -> {
-                    // Handle calendar navigation
+                    // 일정 관리로 이동 (미구현)
                     true
                 }
                 else -> false
@@ -90,8 +91,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun navigateToHome() {
+        val intent = Intent(this, MainActivity::class.java)
+        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        startActivity(intent, options.toBundle())
+        finish()
+    }
+
+    private fun navigateToCompletedOrders() {
+        val intent = Intent(this, CompletedOrdersActivity::class.java)
+        ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        startActivity(intent)
+    }
+
+    private fun navigateToManageDelivery() {
+        val intent = Intent(this, ManageDeliveryActivity::class.java)
+        ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        startActivity(intent)
+    }
 
     private fun loadInitialData() {
+        // 초기 주문 데이터 추가
         processingOrders.add(Order(
             id = "1",
             time = "15:00",
@@ -101,30 +121,30 @@ class MainActivity : AppCompatActivity() {
             price = "21,200원",
             status = OrderStatus.READY
         ))
-        loadProcessingOrders()
+        loadProcessingOrders() // 처리 중인 주문 로드
     }
 
     private fun loadProcessingOrders() {
         if (processingOrders.isNotEmpty()) {
-            currentOrder = processingOrders.first()
-            updateOrderDetails(currentOrder!!)
+            currentOrder = processingOrders.first() // 첫 번째 처리 중인 주문 선택
+            updateOrderDetails(currentOrder!!) // 주문 상세 정보 업데이트
             acceptButton.text = "접수"
             acceptButton.setBackgroundColor(ContextCompat.getColor(this, R.color.processing_color))
             orderCardView.visibility = View.VISIBLE
         } else {
-            orderCardView.visibility = View.GONE
+            orderCardView.visibility = View.GONE // 처리 중인 주문이 없으면 카드뷰 숨김
         }
     }
 
     private fun loadDeliveringOrders() {
         if (deliveringOrders.isNotEmpty()) {
-            currentOrder = deliveringOrders.first()
-            updateOrderDetails(currentOrder!!)
+            currentOrder = deliveringOrders.first() // 첫 번째 배달 중인 주문 선택
+            updateOrderDetails(currentOrder!!) // 주문 상세 정보 업데이트
             acceptButton.text = "완료"
             acceptButton.setBackgroundColor(ContextCompat.getColor(this, R.color.delivering_color))
             orderCardView.visibility = View.VISIBLE
         } else {
-            orderCardView.visibility = View.GONE
+            orderCardView.visibility = View.GONE // 배달 중인 주문이 없으면 카드뷰 숨김
         }
     }
 
@@ -152,6 +172,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateOrderDetails(order: Order) {
+        // 주문 상세 정보 업데이트
         timeTextView.text = order.time
         orderSummaryTextView.text = order.summary
         addressTextView.text = order.address

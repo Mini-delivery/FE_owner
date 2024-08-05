@@ -9,9 +9,9 @@
         android:icon="@drawable/ic_done"
         android:title="완료"/>
     <item
-        android:id="@+id/nav_sales"
+        android:id="@+id/nav_delivery"
         android:icon="@drawable/ic_sales"
-        android:title="매출조회"/>
+        android:title="배달관리"/>
     <item
         android:id="@+id/nav_calendar"
         android:icon="@drawable/ic_calendar"
