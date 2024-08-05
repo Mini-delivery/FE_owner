@@ -3,8 +3,6 @@ package com.example.minidelivery
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.webkit.WebSettings
-import android.webkit.WebView
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +22,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var priceTextView: TextView
     private lateinit var bottomNavigation: BottomNavigationView
     private lateinit var orderCardView: View
-    private lateinit var webView: WebView
     private val processingOrders = mutableListOf<Order>() // 처리 중인 주문 목록
     private val deliveringOrders = mutableListOf<Order>() // 배달 중인 주문 목록
     private var currentOrder: Order? = null // 현재 표시 중인 주문
@@ -71,7 +68,6 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    navigateToHome() // 홈으로 이동
                     true
                 }
                 R.id.nav_history -> {
@@ -89,13 +85,6 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-    }
-
-    private fun navigateToHome() {
-        val intent = Intent(this, MainActivity::class.java)
-        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
-        startActivity(intent, options.toBundle())
-        finish()
     }
 
     private fun navigateToCompletedOrders() {
