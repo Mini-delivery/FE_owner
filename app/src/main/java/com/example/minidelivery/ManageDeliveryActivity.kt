@@ -26,13 +26,13 @@ class ManageDeliveryActivity : AppCompatActivity() {
         bottomNavigation.selectedItemId = R.id.nav_delivery // 현재 화면에 해당하는 메뉴 아이템 선택
 
 
-        // 라즈베리파이 실시간 송출
+        // 🛜 라즈베리파이 실시간 송출 🛜
         // WebView 설정
         webView = findViewById(R.id.webview)
         val webSettings: WebSettings = webView.settings
         webSettings.javaScriptEnabled = true // 필요에 따라 JavaScript 허용
 
-        // 스트리밍 URL 설정 (예: http://<your_ip>:8000/stream.mjpg)
+        // 스트리밍 URL 설정
         val streamingUrl = "http://192.168.137.36:8000/index.html"
         webView.loadUrl(streamingUrl)
 
