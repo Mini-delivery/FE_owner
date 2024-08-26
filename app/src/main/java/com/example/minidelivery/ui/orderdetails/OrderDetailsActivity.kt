@@ -1,4 +1,4 @@
-package com.example.minidelivery
+package com.example.minidelivery.ui.orderdetails
 
 import android.app.Activity
 import android.content.Intent
@@ -8,6 +8,9 @@ import android.widget.TextView
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.minidelivery.OrderStatus
+import com.example.minidelivery.R
+import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
 
 class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var orderSummaryTextView: TextView // 주문 요약 텍스트뷰

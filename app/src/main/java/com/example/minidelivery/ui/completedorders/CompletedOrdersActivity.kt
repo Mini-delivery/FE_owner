@@ -1,4 +1,4 @@
-package com.example.minidelivery
+package com.example.minidelivery.ui.completedorders
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,6 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.minidelivery.ui.managedelivery.ManageDeliveryActivity
+import com.example.minidelivery.R
+import com.example.minidelivery.ui.main.MainActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.ChipGroup
 
@@ -125,7 +128,10 @@ class CompletedOrdersActivity : AppCompatActivity() {
 
     private fun navigateToManageDelivery() { // 배달 관리로 이동하는 함수
         val intent = Intent(this, ManageDeliveryActivity::class.java) // 인텐트 생성
-        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out) // 애니메이션 옵션 생성
+        val options = ActivityOptionsCompat.makeCustomAnimation(this,
+            R.anim.fade_in,
+            R.anim.fade_out
+        ) // 애니메이션 옵션 생성
         startActivity(intent, options.toBundle()) // 애니메이션과 함께 액티비티 시작
     }
 }

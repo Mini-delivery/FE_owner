@@ -17,19 +17,16 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ManageDeliveryActivity"
+            android:name=".ui.managedelivery.ManageDeliveryActivity"
             android:exported="false" />
         <activity
-            android:name=".CompletedOrdersActivity"
+            android:name=".ui.completedorders.CompletedOrdersActivity"
             android:exported="false" />
         <activity
-            android:name=".DeliveryDoneActivity"
+            android:name=".ui.orderdetails.OrderDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".OrderDetailsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

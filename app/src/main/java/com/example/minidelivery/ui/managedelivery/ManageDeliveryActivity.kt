@@ -1,4 +1,4 @@
-package com.example.minidelivery
+package com.example.minidelivery.ui.managedelivery
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +7,9 @@ import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import com.example.minidelivery.R
+import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
+import com.example.minidelivery.ui.main.MainActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 
@@ -93,14 +96,20 @@ class ManageDeliveryActivity : AppCompatActivity() {
 
     private fun navigateToHome() {
         val intent = Intent(this, MainActivity::class.java)
-        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        val options = ActivityOptionsCompat.makeCustomAnimation(this,
+            R.anim.fade_in,
+            R.anim.fade_out
+        )
         startActivity(intent, options.toBundle())
         finish()
     }
 
     private fun navigateToCompletedOrders() {
         val intent = Intent(this, CompletedOrdersActivity::class.java)
-        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        val options = ActivityOptionsCompat.makeCustomAnimation(this,
+            R.anim.fade_in,
+            R.anim.fade_out
+        )
         startActivity(intent, options.toBundle())
     }
 }
