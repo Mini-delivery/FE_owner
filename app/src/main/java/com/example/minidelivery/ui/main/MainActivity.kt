@@ -1,4 +1,4 @@
-package com.example.minidelivery
+package com.example.minidelivery.ui.main
 
 import android.app.Activity
 import android.content.Intent
@@ -10,6 +10,12 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
+import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
+import com.example.minidelivery.ui.managedelivery.ManageDeliveryActivity
+import com.example.minidelivery.Order
+import com.example.minidelivery.ui.orderdetails.OrderDetailsActivity
+import com.example.minidelivery.OrderStatus
+import com.example.minidelivery.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import retrofit2.Call
@@ -202,7 +208,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun loadInitialData() {
         // 초기 주문 데이터 추가
-        processingOrders.add(Order(
+        processingOrders.add(
+            Order(
             id = "1",
             time = "15:00",
             summary = "연어 샐러드 외 1개",
@@ -210,7 +217,8 @@ class MainActivity : AppCompatActivity() {
             paymentStatus = "결제완료",
             price = "21,200원",
             status = OrderStatus.READY
-        ))
+        )
+        )
         loadProcessingOrders() // 처리 중인 주문 로드
     }
 
