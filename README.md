@@ -1,14 +1,11 @@
-# MiniDelivery
-     
+# MiniDelivery     
 
 ### What is "Mini-Delivery"
-자율주행 자동차를 활용한 배달 서비스
-     
-     
+자율주행 자동차를 활용한 배달 서비스     
+
 ## Project Overview
-![Project Overview](https://github.com/user-attachments/assets/6ae3f8b4-4460-4c45-b75a-b1926ffb1574)
-      
-     
+![Project Overview](https://github.com/user-attachments/assets/6ae3f8b4-4460-4c45-b75a-b1926ffb1574)     
+
 
 ### 주요 적용 기술
 - Kotlin을 이용한 소비자 및 업체측 배달 서비스 어플 제작
@@ -16,9 +13,7 @@
 - JPA(Java Persistence API)를 이용하여 객체지향적 데이터베이스 작업 수행 - Raspberry 4B를 활용한 센서 데이터 처리 및 차량 모터 제어
 - Raspberry picamera 모듈을 이용한 실시간 송출 화면 제작
 - 스레드를 활욜한 멀티태스킹 및 CPU 자원관리
-- opencv, opencvdnn을 이용한 객체 인식 및 주행 경로 추적
-     
-     
+- opencv, opencvdnn을 이용한 객체 인식 및 주행 경로 추적     
 
 ### 참여 학생의 주요 이력
 - 웹공학트랙 최은서 (irenelove112@naver.com)
