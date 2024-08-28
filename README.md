@@ -2,6 +2,11 @@
 자율주행 자동차를 활용한 배달 서비스<br><br><br>
 
 
+## FE part
+Customer APP
+<br><br>
+
+
 ## Project Overview
 ![Project Overview](https://github.com/user-attachments/assets/6ae3f8b4-4460-4c45-b75a-b1926ffb1574)      
 
