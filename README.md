@@ -1,13 +1,14 @@
 # MiniDelivery Owner APP
-2024 한성대학교 공학경진대회
+2024 한성대학교 공학경진대회  
 
-자율주행 자동차를 활용한 배달 서비스: Mini-Delivery
+### What is "Mini-Delivery"
+자율주행 자동차를 활용한 배달 서비스  
 
-### Project Overview
+## Project Overview
 ![Project Overview](https://github.com/user-attachments/assets/6ae3f8b4-4460-4c45-b75a-b1926ffb1574)
-
-
-#### 주요 적용 기술
+  
+  
+### 주요 적용 기술
 - Kotlin을 이용한 소비자 및 업체측 배달 서비스 어플 제작
 - Springboot 프레임워크를 활용해 만든 서버로 데이터 전달 및 저장
 - JPA(Java Persistence API)를 이용하여 객체지향적 데이터베이스 작업 수행 - Raspberry 4B를 활용한 센서 데이터 처리 및 차량 모터 제어
@@ -15,8 +16,8 @@
 - 스레드를 활욜한 멀티태스킹 및 CPU 자원관리
 - opencv, opencvdnn을 이용한 객체 인식 및 주행 경로 추적
 
-
-#### 참여 학생의 주요 이력
+  
+### 참여 학생의 주요 이력
 - 웹공학트랙 최은서 (irenelove112@naver.com)
   JavaScript, Python 프로그래밍 기술보유, 웹 프론트 취업 희망
 
