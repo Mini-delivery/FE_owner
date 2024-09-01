@@ -4,4 +4,5 @@
     <color name="white">#FFFFFFFF</color>
     <color name="processing_color">#FFA000</color>
     <color name="delivering_color">#4CAF50</color>
+    <color name="completed_color">#FF79E8</color>
 </resources>
