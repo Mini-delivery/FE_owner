@@ -2,96 +2,172 @@ package com.example.minidelivery.ui.managedelivery
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.MotionEvent
 import android.webkit.WebSettings
 import android.webkit.WebView
-import androidx.activity.OnBackPressedCallback
+import android.widget.Button
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import com.example.minidelivery.R
-import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
-import com.example.minidelivery.ui.main.MainActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
+import okhttp3.*
+import java.io.IOException // IOException import 추가
+
+// MainActivity와 CompletedOrdersActivity의 패키지 경로에 맞게 import 추가
+import com.example.minidelivery.ui.main.MainActivity
+import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
 
 class ManageDeliveryActivity : AppCompatActivity() {
-    private lateinit var tabLayout: TabLayout // 탭 레이아웃 선언
-    private lateinit var webView: WebView // 웹뷰 선언
-    private lateinit var bottomNavigation: BottomNavigationView // 하단 네비게이션 선언
+
+    private lateinit var tabLayout: TabLayout
+    private lateinit var webView: WebView
+    private lateinit var bottomNavigation: BottomNavigationView
+    private lateinit var btnLeft: Button
+    private lateinit var btnRight: Button
+    private lateinit var btnGo: Button
+    private lateinit var btnBack: Button
+    private lateinit var btnStop: Button
+    private lateinit var btnAuto: Button
+    private lateinit var btnRefresh: Button
+
+    private val client = OkHttpClient()
+    private val handler = Handler(Looper.getMainLooper())
+    private var isSendingCommand = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState) // 부모 클래스 onCreate 호출
-        setContentView(R.layout.activity_manage_delivery) // 레이아웃 설정
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_manage_delivery)
 
-        initViews() // 뷰 초기화
-        setupListeners() // 리스너 설정
-        setupWebView() // 웹뷰 설정
+        initViews()
+        setupListeners()
+        setupWebView()
 
-        bottomNavigation.selectedItemId = R.id.nav_delivery // 현재 화면에 해당하는 메뉴 아이템 선택
-
-
-        // 🛜 라즈베리파이 실시간 송출 🛜
-        // WebView 설정
-        webView = findViewById(R.id.webview)
-        val webSettings: WebSettings = webView.settings
-        webSettings.javaScriptEnabled = true // 필요에 따라 JavaScript 허용
-
-        // 스트리밍 URL 설정
-        val streamingUrl = "http://192.168.137.36:8000/index.html"
-        webView.loadUrl(streamingUrl)
-
-
-        // 뒤로가기 처리
-        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                navigateToHome() // 홈으로 이동
-            }
-        })
+        bottomNavigation.selectedItemId = R.id.nav_delivery
     }
 
     private fun initViews() {
-        tabLayout = findViewById(R.id.tabLayout) // 탭 레이아웃 초기화
-        webView = findViewById(R.id.webview) // 웹뷰 초기화
-        bottomNavigation = findViewById(R.id.bottomNavigation) // 하단 네비게이션 초기화
+        tabLayout = findViewById(R.id.tabLayout)
+        webView = findViewById(R.id.webview)
+        bottomNavigation = findViewById(R.id.bottomNavigation)
+        btnLeft = findViewById(R.id.btn_turn_left)
+        btnRight = findViewById(R.id.btn_turn_right)
+        btnGo = findViewById(R.id.btn_go)
+        btnBack = findViewById(R.id.btn_back)
+        btnStop = findViewById(R.id.btn_stop)
+        btnAuto = findViewById(R.id.btn_auto)
+        btnRefresh = findViewById(R.id.btn_refresh)
     }
 
     private fun setupListeners() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    navigateToHome() // 홈으로 이동
+                    navigateToHome()
                     true
                 }
                 R.id.nav_history -> {
-                    navigateToCompletedOrders() // 완료된 주문으로 이동
+                    navigateToCompletedOrders()
                     true
                 }
-                R.id.nav_delivery -> {
-                    // 이미 현재 화면이므로 아무 동작 안 함
-                    true
-                }
-                R.id.nav_calendar -> {
-                    // 일정관리 화면으로 이동 (미구현)
-                    true
-                }
+                R.id.nav_delivery -> true
+                R.id.nav_calendar -> true
                 else -> false
             }
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                // 탭 선택 시 동작 (현재는 "배달중" 탭만 있으므로 추가 동작 없음)
-            }
+            override fun onTabSelected(tab: TabLayout.Tab?) {}
             override fun onTabUnselected(tab: TabLayout.Tab?) {}
             override fun onTabReselected(tab: TabLayout.Tab?) {}
         })
+
+        btnRefresh.setOnClickListener {
+            webView.reload() // 웹뷰 새로고침
+        }
+
+        btnStop.setOnClickListener {
+            sendCommand("stop", "Stop command sent")
+        }
+
+        btnAuto.setOnClickListener {
+            sendCommand("auto", "Auto mode activated")
+        }
+
+        // Go, Back, Left, Right 터치 리스너 설정
+        setupTouchListener(btnGo, "go")
+        setupTouchListener(btnBack, "back")
+        setupTouchListener(btnLeft, "left")
+        setupTouchListener(btnRight, "right")
+    }
+
+    private fun setupTouchListener(button: Button, command: String) {
+        button.setOnTouchListener { _, event ->
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    if (!isSendingCommand) {
+                        isSendingCommand = true
+                        handler.post(sendCommandRepeatedly(command))
+                    }
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    isSendingCommand = false
+                    handler.removeCallbacksAndMessages(null)
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+    private fun sendCommandRepeatedly(command: String): Runnable {
+        return object : Runnable {
+            override fun run() {
+                sendCommand(command, "$command command sent")
+                if (isSendingCommand) {
+                    handler.postDelayed(this, 500) // 500ms마다 명령 전송
+                }
+            }
+        }
     }
 
     private fun setupWebView() {
         val webSettings: WebSettings = webView.settings
-        webSettings.javaScriptEnabled = true // JavaScript 활성화
+        webSettings.javaScriptEnabled = true
+        val streamingUrl = "http://192.168.137.237:5000"
+        webView.loadUrl(streamingUrl)
+    }
 
-        val streamingUrl = "http://192.168.137.36:8000/index.html" // 스트리밍 URL 설정
-        webView.loadUrl(streamingUrl) // URL 로드
+    private fun sendCommand(command: String, successMessage: String) {
+        val url = "http://192.168.137.34:5000/control"
+        val json = """
+            {"command": "$command"}
+        """.trimIndent()
+
+        val body = RequestBody.create(MediaType.parse("application/json"), json)
+        val request = Request.Builder()
+            .url(url)
+            .post(body)
+            .build()
+
+        client.newCall(request).enqueue(object : Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+                runOnUiThread {
+                    Toast.makeText(this@ManageDeliveryActivity, "명령 전송 실패", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                runOnUiThread {
+                    Toast.makeText(this@ManageDeliveryActivity, successMessage, Toast.LENGTH_SHORT).show()
+                }
+            }
+        })
     }
 
     private fun navigateToHome() {

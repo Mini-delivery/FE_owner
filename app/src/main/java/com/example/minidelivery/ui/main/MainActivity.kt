@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
     // 주문 상세 요청 코드
     val ORDER_DETAILS_REQUEST_CODE = 1001
 
+    //
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)

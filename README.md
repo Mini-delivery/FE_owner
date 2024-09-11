@@ -1,4 +1,3 @@
-# MiniDelivery     
 자율주행 자동차를 활용한 배달 서비스<br><br><br>
 
 

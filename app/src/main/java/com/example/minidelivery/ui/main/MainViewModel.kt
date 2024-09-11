@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.minidelivery.R
 import com.example.minidelivery.data.Order
 import com.example.minidelivery.data.OrderRepository
+import com.example.minidelivery.data.OrderStatus
 
 class MainViewModel : ViewModel() {
     // 주문 저장소
