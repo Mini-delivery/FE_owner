@@ -5,4 +5,15 @@
     <color name="processing_color">#FFA000</color>
     <color name="delivering_color">#4CAF50</color>
     <color name="completed_color">#FF79E8</color>
+
+
+    <!--main color-->
+    <color name="main_color">#84A47C</color>
+
+    <!--dark color-->
+    <color name="dark_gray">#323232</color>
+    <color name="gray">#5C5F5C</color>
+    <color name="light_gray">#979897</color>
+
+
 </resources>

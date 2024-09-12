@@ -1,8 +1,16 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.MiniDelivery" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.MiniDelivery" parent="Theme.Material3.Light.NoActionBar">
         <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="colorPrimary">@android:color/darker_gray</item>
+        <item name="colorPrimaryVariant">@android:color/black</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@android:color/darker_gray</item>
+        <item name="colorSecondaryVariant">@android:color/darker_gray</item>
+        <item name="colorOnSecondary">@android:color/black</item>
+        <item name="android:colorBackground">@android:color/white</item>
+        <item name="colorSurface">@android:color/white</item>
+        <item name="colorOnSurface">@android:color/black</item>
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
     </style>
 
@@ -14,4 +22,20 @@
         <item name="android:activityCloseEnterAnimation">@anim/fade_in</item>
         <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
     </style>
+
+    <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@drawable/bottom_nav_background</item>
+        <item name="itemTextColor">@color/dark_gray</item>
+        <item name="itemIconTint">#84A47C</item>
+        <item name="android:elevation">8dp</item>
+        <item name="itemTextAppearanceActive">@style/BottomNavigationViewTextStyle</item>
+        <item name="itemTextAppearanceInactive">@style/BottomNavigationViewTextStyle</item>
+    </style>
+
+    <style name="BottomNavigationViewTextStyle">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/gray</item>
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+    </style>
+
 </resources>
