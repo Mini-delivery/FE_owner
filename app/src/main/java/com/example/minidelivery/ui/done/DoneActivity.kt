@@ -1,6 +1,5 @@
-package com.example.minidelivery.ui.completedorders
+package com.example.minidelivery.ui.done
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -10,21 +9,21 @@ import com.example.minidelivery.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.ChipGroup
 
-class CompletedOrdersActivity : AppCompatActivity() {
+class DoneActivity : AppCompatActivity() {
     // UI 컴포넌트 선언
     private lateinit var chipGroup: ChipGroup
     private lateinit var completedOrdersRecyclerView: RecyclerView
     private lateinit var bottomNavigation: BottomNavigationView
 
     // ViewModel 선언
-    private lateinit var viewModel: CompletedOrdersViewModel
+    private lateinit var viewModel: DoneViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_completed_orders)
 
         // ViewModel 초기화
-        viewModel = ViewModelProvider(this).get(CompletedOrdersViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(DoneViewModel::class.java)
 
         initViews()
         setupListeners()
@@ -82,7 +81,6 @@ class CompletedOrdersActivity : AppCompatActivity() {
                     viewModel.navigateToManageDelivery(this)
                     true
                 }
-                R.id.nav_calendar -> true
                 else -> false
             }
         }
@@ -94,13 +92,13 @@ class CompletedOrdersActivity : AppCompatActivity() {
             val summary = intent.getStringExtra("orderSummary") ?: return
             val address = intent.getStringExtra("address") ?: ""
             val price = intent.getStringExtra("price") ?: ""
-            viewModel.addNewOrder(CompletedOrder(summary, address, price))
+            viewModel.addNewOrder(Done(summary, address, price))
         }
     }
 
     // RecyclerView 설정
     private fun setupRecyclerView() {
-        val adapter = CompletedOrdersAdapter(emptyList()) // 빈 리스트로 초기화
+        val adapter = DoneAdapter(emptyList()) // 빈 리스트로 초기화
         completedOrdersRecyclerView.adapter = adapter
         completedOrdersRecyclerView.layoutManager = LinearLayoutManager(this)
 

@@ -17,13 +17,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".ui.managedelivery.ManageDeliveryActivity"
+            android:name=".ui.delivery.ManageDeliveryActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.completedorders.CompletedOrdersActivity"
+            android:name=".ui.done.DoneActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.orderdetails.OrderDetailsActivity"
+            android:name=".ui.detail.DetailActivity"
             android:exported="false" />
         <activity
             android:name=".ui.main.MainActivity"

@@ -1,6 +1,5 @@
-package com.example.minidelivery.ui.orderdetails
+package com.example.minidelivery.ui.detail
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
@@ -13,9 +12,9 @@ import com.example.minidelivery.R
 import com.example.minidelivery.data.OrderDetails
 import com.example.minidelivery.data.OrderItem
 import com.example.minidelivery.data.OrderStatus
-import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
+import com.example.minidelivery.ui.done.DoneActivity
 
-class OrderDetailsActivity : AppCompatActivity() {
+class DetailActivity : AppCompatActivity() {
     // UI 컴포넌트 선언
     private lateinit var orderSummaryTextView: TextView
     private lateinit var addressTextView: TextView
@@ -26,14 +25,14 @@ class OrderDetailsActivity : AppCompatActivity() {
     private lateinit var orderItemsContainer: LinearLayout
 
     // ViewModel 선언
-    private lateinit var viewModel: OrderDetailsViewModel
+    private lateinit var viewModel: DetailViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order_details)
 
         // ViewModel 초기화
-        viewModel = ViewModelProvider(this).get(OrderDetailsViewModel::class.java)
+        viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)
 
         initViews()
         setupListeners()
@@ -96,9 +95,10 @@ class OrderDetailsActivity : AppCompatActivity() {
     private fun updateDeliveryStatusButton(status: OrderStatus) {
         deliveryStatusButton.text = when (status) {
             OrderStatus.READY -> "접수"
-            OrderStatus.COOKING -> "조리완료"
-            OrderStatus.DELIVERING -> "배달완료"
-            OrderStatus.COMPLETED -> "완료"
+            OrderStatus.COOKING -> "조리중"
+            OrderStatus.COOKED -> "조리완료"
+            OrderStatus.DELIVERING -> "배달중"
+            OrderStatus.COMPLETED -> "배달완료"
         }
     }
 
@@ -121,7 +121,7 @@ class OrderDetailsActivity : AppCompatActivity() {
 
     // 완료된 주문 화면으로 이동
     private fun navigateToCompletedOrders() {
-        val intent = Intent(this, CompletedOrdersActivity::class.java).apply {
+        val intent = Intent(this, DoneActivity::class.java).apply {
             putExtra("orderSummary", orderSummaryTextView.text.toString())
             putExtra("address", addressTextView.text.toString())
             putExtra("price", paymentStatusTextView.text.toString())

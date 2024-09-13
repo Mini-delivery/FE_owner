@@ -1,4 +1,4 @@
-package com.example.minidelivery.ui.orderdetails
+package com.example.minidelivery.ui.detail
 
 import android.app.Activity
 import android.content.Intent
@@ -9,7 +9,7 @@ import com.example.minidelivery.data.OrderDetails
 import com.example.minidelivery.data.OrderItem
 import com.example.minidelivery.data.OrderStatus
 
-class OrderDetailsViewModel : ViewModel() {
+class DetailViewModel : ViewModel() {
     private val _orderDetails = MutableLiveData<OrderDetails>()
     val orderDetails: LiveData<OrderDetails> = _orderDetails
 
@@ -40,7 +40,8 @@ class OrderDetailsViewModel : ViewModel() {
         val currentStatus = _orderStatus.value ?: return
         val newStatus = when (currentStatus) {
             OrderStatus.READY -> OrderStatus.COOKING
-            OrderStatus.COOKING -> OrderStatus.DELIVERING
+            OrderStatus.COOKING -> OrderStatus.COOKED
+            OrderStatus.COOKED -> OrderStatus.DELIVERING
             OrderStatus.DELIVERING -> OrderStatus.COMPLETED
             OrderStatus.COMPLETED -> OrderStatus.COMPLETED
         }

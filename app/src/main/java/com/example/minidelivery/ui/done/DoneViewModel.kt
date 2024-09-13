@@ -1,4 +1,4 @@
-package com.example.minidelivery.ui.completedorders
+package com.example.minidelivery.ui.done
 
 
 import android.app.Activity
@@ -10,15 +10,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.minidelivery.R
 import com.example.minidelivery.ui.main.MainActivity
-import com.example.minidelivery.ui.managedelivery.ManageDeliveryActivity
+import com.example.minidelivery.ui.delivery.ManageDeliveryActivity
 
-class CompletedOrdersViewModel : ViewModel() {
+class DoneViewModel : ViewModel() {
     // 완료된 주문 목록
-    private val _completedOrders = MutableLiveData<List<CompletedOrder>>(listOf())
-    val completedOrders: LiveData<List<CompletedOrder>> = _completedOrders
+    private val _completedOrders = MutableLiveData<List<Done>>(listOf())
+    val completedOrders: LiveData<List<Done>> = _completedOrders
 
     // 새 주문 추가
-    fun addNewOrder(order: CompletedOrder) {
+    fun addNewOrder(order: Done) {
         val currentList = _completedOrders.value?.toMutableList() ?: mutableListOf()
         currentList.add(0, order)
         _completedOrders.value = currentList

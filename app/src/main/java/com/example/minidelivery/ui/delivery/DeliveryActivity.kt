@@ -1,4 +1,4 @@
-package com.example.minidelivery.ui.managedelivery
+package com.example.minidelivery.ui.delivery
 
 import android.content.Intent
 import android.os.Bundle
@@ -19,7 +19,7 @@ import java.io.IOException // IOException import 추가
 
 // MainActivity와 CompletedOrdersActivity의 패키지 경로에 맞게 import 추가
 import com.example.minidelivery.ui.main.MainActivity
-import com.example.minidelivery.ui.completedorders.CompletedOrdersActivity
+import com.example.minidelivery.ui.done.DoneActivity
 
 class ManageDeliveryActivity : AppCompatActivity() {
 
@@ -40,7 +40,7 @@ class ManageDeliveryActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_manage_delivery)
+        setContentView(R.layout.activity_delivery)
 
         initViews()
         setupListeners()
@@ -74,7 +74,6 @@ class ManageDeliveryActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_delivery -> true
-                R.id.nav_calendar -> true
                 else -> false
             }
         }
@@ -181,7 +180,7 @@ class ManageDeliveryActivity : AppCompatActivity() {
     }
 
     private fun navigateToCompletedOrders() {
-        val intent = Intent(this, CompletedOrdersActivity::class.java)
+        val intent = Intent(this, DoneActivity::class.java)
         val options = ActivityOptionsCompat.makeCustomAnimation(this,
             R.anim.fade_in,
             R.anim.fade_out

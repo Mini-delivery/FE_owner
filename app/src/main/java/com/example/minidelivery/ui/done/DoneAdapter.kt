@@ -1,4 +1,4 @@
-package com.example.minidelivery.ui.completedorders
+package com.example.minidelivery.ui.done
 
 
 import android.view.LayoutInflater
@@ -8,8 +8,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.minidelivery.R
 
-class CompletedOrdersAdapter(private var orders: List<CompletedOrder>) :
-    RecyclerView.Adapter<CompletedOrdersAdapter.ViewHolder>() {
+class DoneAdapter(private var orders: List<Done>) :
+    RecyclerView.Adapter<DoneAdapter.ViewHolder>() {
 
     // ViewHolder 클래스 정의
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -37,7 +37,7 @@ class CompletedOrdersAdapter(private var orders: List<CompletedOrder>) :
     override fun getItemCount() = orders.size
 
     // 주문 목록 업데이트
-    fun updateOrders(newOrders: List<CompletedOrder>) {
+    fun updateOrders(newOrders: List<Done>) {
         orders = newOrders
         notifyDataSetChanged()
     }
