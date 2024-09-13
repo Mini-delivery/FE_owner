@@ -16,6 +16,7 @@
 
     <style name="Theme.MiniDelivery" parent="Base.Theme.MiniDelivery" />
 
+    <!--  Animation  -->
     <style name="CustomActivityAnimation" parent="@android:style/Animation.Activity">
         <item name="android:activityOpenEnterAnimation">@anim/fade_in</item>
         <item name="android:activityOpenExitAnimation">@anim/fade_out</item>
@@ -23,19 +24,23 @@
         <item name="android:activityCloseExitAnimation">@anim/fade_out</item>
     </style>
 
+
+    <!--  Menu Bar  -->
     <style name="CustomBottomNavigationView" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="android:background">@drawable/bottom_nav_background</item>
-        <item name="itemTextColor">@color/dark_gray</item>
-        <item name="itemIconTint">#84A47C</item>
+        <item name="itemTextColor">@drawable/bottom_nav_item_color</item>
+        <item name="itemIconTint">@drawable/bottom_nav_item_color</item>
         <item name="android:elevation">8dp</item>
         <item name="itemTextAppearanceActive">@style/BottomNavigationViewTextStyle</item>
         <item name="itemTextAppearanceInactive">@style/BottomNavigationViewTextStyle</item>
     </style>
 
+    <!--  Menu Bar  -->
     <style name="BottomNavigationViewTextStyle">
         <item name="android:textSize">10sp</item>
         <item name="android:textColor">@color/gray</item>
         <item name="android:fontFamily">@font/pretendard_bold</item>
     </style>
+
 
 </resources>

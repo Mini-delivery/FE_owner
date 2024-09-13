@@ -131,7 +131,4 @@ class OrderDetailsActivity : AppCompatActivity() {
         finish()
     }
 
-    override fun onBackPressed() {
-        viewModel.onBackButtonClicked(this)
-    }
 }

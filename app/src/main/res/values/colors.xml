@@ -13,7 +13,7 @@
     <!--dark color-->
     <color name="dark_gray">#323232</color>
     <color name="gray">#5C5F5C</color>
-    <color name="light_gray">#979897</color>
+    <color name="light_gray">#BEBEBE</color>
 
 
 </resources>
