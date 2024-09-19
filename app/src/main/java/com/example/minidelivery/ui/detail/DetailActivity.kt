@@ -29,6 +29,7 @@ class DetailActivity : AppCompatActivity() {
     // ViewModel 선언
     private lateinit var viewModel: DetailViewModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_details)
@@ -47,6 +48,8 @@ class DetailActivity : AppCompatActivity() {
             intent.getStringExtra("orderStatus")
         )
     }
+
+
 
     // 뷰 초기화
     private fun initViews() {
@@ -70,7 +73,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
-    // ViewModel 관찰
+    // ViewModel 관찰 함수
     private fun observeViewModel() {
         viewModel.orderDetails.observe(this) { orderDetails ->
             updateUI(orderDetails) // 주문 상세 정보로 UI 업데이트
@@ -85,6 +88,12 @@ class DetailActivity : AppCompatActivity() {
                 navigateToDelivery() // 배달 화면으로 이동
             }
         }
+
+        viewModel.navigateToDone.observe(this) { shouldNavigate ->
+            if (shouldNavigate) {
+                navigateToDone() // 완료 화면으로 이동
+            }
+        }
     }
 
     // UI 업데이트
@@ -97,15 +106,14 @@ class DetailActivity : AppCompatActivity() {
         setupOrderItems(orderDetails.items) // 주문 항목 설정
     }
 
-    // 배달 상태 버튼 업데이트
+    // 배달 상태 버튼 업데이트 함수
     private fun updateDeliveryStatusButton(status: OrderStatus) {
         deliveryStatusButton.text = when (status) {
             OrderStatus.READY -> "접수"
             OrderStatus.COOKING -> "조리완료"
-            OrderStatus.COOKED -> "조리완료"
-            OrderStatus.DELIVERING -> "배달중"
-            OrderStatus.COMPLETED -> "배달완료"
-            else -> "접수"
+            OrderStatus.COOKED -> "배달시작"
+            OrderStatus.DELIVERING -> "배달완료"
+            OrderStatus.COMPLETED -> "완료"
         }
     }
 
@@ -127,10 +135,17 @@ class DetailActivity : AppCompatActivity() {
         orderItemsContainer.addView(itemView) // 컨테이너에 항목 뷰 추가
     }
 
-    // 배달 화면으로 이동
+    // 배달 화면으로 이동하는 함수
     private fun navigateToDelivery() {
         val intent = Intent(this, DeliveryActivity::class.java)
         startActivity(intent) // 배달 관리 화면으로 이동
+        finish() // 현재 액티비티 종료
+    }
+
+    // 완료 화면으로 이동하는 함수
+    private fun navigateToDone() {
+        val intent = Intent(this, DoneActivity::class.java)
+        startActivity(intent) // 완료 화면으로 이동
         finish() // 현재 액티비티 종료
     }
 

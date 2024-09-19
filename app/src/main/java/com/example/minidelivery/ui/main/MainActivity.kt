@@ -17,7 +17,7 @@ import androidx.cardview.widget.CardView
 import com.google.android.material.chip.ChipGroup
 
 class MainActivity : AppCompatActivity() {
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: MainViewModel by viewModels() // ViewModel 초기화
 
     private lateinit var tabLayout: TabLayout // 탭 레이아웃 선언
     private lateinit var chipGroup: ChipGroup // 칩 그룹 선언
@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity() {
         observeViewModel() // ViewModel 관찰 설정
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.loadOrders() // 화면이 다시 보일 때마다 주문 목록 새로고침
+    }
+
+    // 뷰 초기화 함수
     private fun initViews() {
         tabLayout = findViewById(R.id.tabLayout)
         chipGroup = findViewById(R.id.chipGroup)
@@ -52,6 +58,7 @@ class MainActivity : AppCompatActivity() {
         priceTextView = findViewById(R.id.priceTextView)
     }
 
+    // UI 설정 함수
     private fun setupUI() {
         tabLayout.addOnTabSelectedListener(viewModel.tabSelectedListener) // 탭 선택 리스너 설정
 
@@ -93,19 +100,20 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    // ViewModel 관찰 함수
     private fun observeViewModel() {
         viewModel.currentOrder.observe(this) { order ->
             order?.let {
-                timeTextView.text = it.time
-                orderSummaryTextView.text = it.summary
-                addressTextView.text = it.address
-                paymentStatusTextView.text = it.paymentStatus
-                priceTextView.text = it.price
+                timeTextView.text = it.time // 시간 설정
+                orderSummaryTextView.text = it.summary // 주문 요약 설정
+                addressTextView.text = it.address // 주소 설정
+                paymentStatusTextView.text = it.paymentStatus // 결제 상태 설정
+                priceTextView.text = it.price // 가격 설정
             }
         }
 
         viewModel.orderCardVisibility.observe(this) { isVisible ->
-            orderCardView.visibility = if (isVisible) View.VISIBLE else View.GONE
+            orderCardView.visibility = if (isVisible) View.VISIBLE else View.GONE // 주문 카드 표시 여부 설정
         }
 
         viewModel.acceptButtonState.observe(this) { state ->
@@ -121,6 +129,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // DetailActivity에서 돌아왔을 때 결과 처리
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ORDER_DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
@@ -131,6 +140,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val ORDER_DETAILS_REQUEST_CODE = 1001
+        const val ORDER_DETAILS_REQUEST_CODE = 1001 // DetailActivity 요청 코드
     }
 }

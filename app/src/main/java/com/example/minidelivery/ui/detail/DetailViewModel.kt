@@ -20,8 +20,12 @@ class DetailViewModel : ViewModel() {
     private val _navigateToDelivery = MutableLiveData<Boolean>() // 배달 화면 이동 LiveData
     val navigateToDelivery: LiveData<Boolean> = _navigateToDelivery
 
+    private val _navigateToDone = MutableLiveData<Boolean>()
+    val navigateToDone: LiveData<Boolean> = _navigateToDone
+
     private var currentOrderId: String? = null // 현재 주문 ID를 저장할 변수 추가
 
+    // 주문 상세 정보 로드 함수
     fun loadOrderDetails(orderId: String?, orderStatusString: String?) {
         currentOrderId = orderId // 현재 주문 ID 저장
 
@@ -43,26 +47,29 @@ class DetailViewModel : ViewModel() {
         }
     }
 
+    // 주문 상태 업데이트 함수
     fun updateOrderStatus() {
         val currentStatus = _orderStatus.value ?: return
         val newStatus = when (currentStatus) {
             OrderStatus.READY -> OrderStatus.COOKING
-            OrderStatus.COOKING -> OrderStatus.DELIVERING
+            OrderStatus.COOKING -> OrderStatus.COOKED
+            OrderStatus.COOKED -> OrderStatus.DELIVERING
             OrderStatus.DELIVERING -> OrderStatus.COMPLETED
             OrderStatus.COMPLETED -> OrderStatus.COMPLETED
-            else -> OrderStatus.READY // COOKED 상태 추가
         }
         _orderStatus.value = newStatus // 새 상태 설정
-
-        if (newStatus == OrderStatus.DELIVERING) {
-            _navigateToDelivery.value = true // 배달 화면으로 이동 트리거
-        }
 
         // 리포지토리에 주문 상태 업데이트
         currentOrderId?.let { id ->
             repository.getOrderById(id)?.let { order ->
                 repository.updateOrder(order.copy(status = newStatus))
             }
+        }
+
+        if (newStatus == OrderStatus.DELIVERING) {
+            _navigateToDelivery.value = true // 배달 화면으로 이동 트리거
+        } else if (newStatus == OrderStatus.COMPLETED) {
+            _navigateToDone.value = true // 완료 화면으로 이동 트리거
         }
     }
 
