@@ -43,7 +43,7 @@ class DoneActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        bottomNavigation.selectedItemId = R.id.nav_history
+        bottomNavigation.selectedItemId = R.id.nav_done
     }
 
     override fun onPause() {
@@ -76,7 +76,7 @@ class DoneActivity : AppCompatActivity() {
                     viewModel.navigateToHome(this)
                     true
                 }
-                R.id.nav_history -> true
+                R.id.nav_done -> true
                 R.id.nav_delivery -> {
                     viewModel.navigateToManageDelivery(this)
                     true

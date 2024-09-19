@@ -69,7 +69,7 @@ class DeliveryActivity : AppCompatActivity() {
                     navigateToHome()
                     true
                 }
-                R.id.nav_history -> {
+                R.id.nav_done -> {
                     navigateToCompletedOrders()
                     true
                 }

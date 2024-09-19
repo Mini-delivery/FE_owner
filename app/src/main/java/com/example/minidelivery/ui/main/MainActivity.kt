@@ -65,12 +65,12 @@ class MainActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> true
-                R.id.nav_history -> {
-                    startActivity(Intent(this, DoneActivity::class.java)) // 완료 내역으로 이동
-                    true
-                }
                 R.id.nav_delivery -> {
                     startActivity(Intent(this, DeliveryActivity::class.java)) // 배달 관리로 이동
+                    true
+                }
+                R.id.nav_done -> {
+                    startActivity(Intent(this, DoneActivity::class.java)) // 완료 내역으로 이동
                     true
                 }
                 else -> false
