@@ -20,7 +20,7 @@ class DoneActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_completed_orders)
+        setContentView(R.layout.activity_done)
 
         // ViewModel 초기화
         viewModel = ViewModelProvider(this).get(DoneViewModel::class.java)
