@@ -15,91 +15,108 @@ enum class SortOrder {
 }
 
 class MainViewModel : ViewModel() {
-    private val repository = OrderRepository.getInstance()
+    private val repository = OrderRepository.getInstance() // 리포지토리 인스턴스 가져오기
 
-    private val _currentOrder = MutableLiveData<Order?>()
+    private val _currentOrder = MutableLiveData<Order?>() // 현재 주문 LiveData
     val currentOrder: LiveData<Order?> = _currentOrder
 
-    val orderCardVisibility = currentOrder.map { it != null }
+    val orderCardVisibility = currentOrder.map { it != null } // 주문 카드 표시 여부
 
-    private val _acceptButtonState = MutableLiveData<AcceptButtonState>()
+    private val _acceptButtonState = MutableLiveData<AcceptButtonState>() // 접수 버튼 상태 LiveData
     val acceptButtonState: LiveData<AcceptButtonState> = _acceptButtonState
 
-    private var currentTab = 0
-    private var sortOrder = SortOrder.LATEST
+    private val _navigateToDelivery = MutableLiveData<Boolean>() // 배달 화면 이동 LiveData
+    val navigateToDelivery: LiveData<Boolean> = _navigateToDelivery
+
+    private var currentTab = 0 // 현재 선택된 탭
+    private var sortOrder = SortOrder.LATEST // 현재 정렬 순서
+
 
     init {
-        loadInitialData()
+        loadInitialData() // 초기 데이터 로드
     }
 
     private fun loadInitialData() {
-        repository.loadInitialData()
-        loadOrders()
+        repository.loadInitialData() // 리포지토리에서 초기 데이터 로드
+        loadOrders() // 주문 목록 로드
     }
 
     private fun loadOrders() {
         val orders = when (currentTab) {
-            0 -> repository.getProcessingOrders()
-            1 -> repository.getCookingOrders()
+            0 -> repository.getProcessingOrders() // 처리 중인 주문 가져오기
+            1 -> repository.getCookingOrders() // 조리 중인 주문 가져오기
             else -> emptyList()
         }
 
         val sortedOrders = when (sortOrder) {
-            SortOrder.LATEST -> orders.sortedByDescending { it.time }
-            SortOrder.OLDEST -> orders.sortedBy { it.time }
+            SortOrder.LATEST -> orders.sortedByDescending { it.time } // 최신순 정렬
+            SortOrder.OLDEST -> orders.sortedBy { it.time } // 과거순 정렬
         }
 
-        _currentOrder.value = sortedOrders.firstOrNull()
-        updateAcceptButtonState()
+        _currentOrder.value = sortedOrders.firstOrNull() // 첫 번째 주문을 현재 주문으로 설정
+        updateAcceptButtonState() // 버튼 상태 업데이트
     }
-
 
     fun onAcceptButtonClick() {
         _currentOrder.value?.let { order ->
             when (order.status) {
-                OrderStatus.READY -> updateOrderStatus(OrderStatus.COOKING)
-                OrderStatus.COOKING -> updateOrderStatus(OrderStatus.COOKED)
-                OrderStatus.COOKED -> updateOrderStatus(OrderStatus.DELIVERING)
-                OrderStatus.DELIVERING -> updateOrderStatus(OrderStatus.COMPLETED)
-                OrderStatus.COMPLETED -> {} // 이미 완료된 주문은 추가 처리 없음
+                OrderStatus.READY -> updateOrderStatus(OrderStatus.COOKING) // 접수 상태에서 조리중으로 변경
+                OrderStatus.COOKING -> {
+                    updateOrderStatus(OrderStatus.DELIVERING) // 조리중에서 배달중으로 변경
+                    _navigateToDelivery.value = true // 배달 화면으로 이동 트리거
+                }
+                // OrderStatus.READY -> updateOrderStatus(OrderStatus.COOKING)
+                // OrderStatus.COOKING -> updateOrderStatus(OrderStatus.COOKED)
+                // OrderStatus.COOKED -> updateOrderStatus(OrderStatus.DELIVERING)
+                // OrderStatus.DELIVERING -> updateOrderStatus(OrderStatus.COMPLETED)
+                // OrderStatus.COMPLETED -> {} // 이미 완료된 주문은 추가 처리 없음
+                else -> {}
             }
         }
     }
 
-    private fun updateOrderStatus(newStatus: OrderStatus) {
+    fun updateOrderStatus(newStatus: OrderStatus) {
         _currentOrder.value?.let { order ->
-            order.status = newStatus
-            repository.updateOrder(order)
-            updateAcceptButtonState()
-            loadOrders()
+            order.status = newStatus // 주문 상태 업데이트
+            repository.updateOrder(order) // 리포지토리에 주문 업데이트
+            updateAcceptButtonState() // 버튼 상태 업데이트
+            loadOrders() // 주문 목록 다시 로드
         }
+    }
+
+    fun updateOrderStatus(newStatusString: String) {
+        val newStatus = OrderStatus.valueOf(newStatusString)
+        updateOrderStatus(newStatus)
     }
 
     private fun updateAcceptButtonState() {
         _currentOrder.value?.let { order ->
             _acceptButtonState.value = when (order.status) {
                 OrderStatus.READY -> AcceptButtonState("접수", R.color.processing_color)
-                OrderStatus.COOKING -> AcceptButtonState("조리중", R.color.cooking_color)
-                OrderStatus.COOKED -> AcceptButtonState("배달시작", R.color.cooked_color)
-                OrderStatus.DELIVERING -> AcceptButtonState("배달완료", R.color.delivering_color)
+                OrderStatus.COOKING -> AcceptButtonState("조리완료", R.color.cooking_color)
+                OrderStatus.DELIVERING -> AcceptButtonState("배달중", R.color.delivering_color)
                 OrderStatus.COMPLETED -> AcceptButtonState("완료", R.color.completed_color)
+                else -> AcceptButtonState("접수", R.color.processing_color)
             }
         }
     }
 
     fun setSortOrder(order: SortOrder) {
-        sortOrder = order
-        loadOrders()
+        sortOrder = order // 정렬 순서 설정
+        loadOrders() // 주문 목록 다시 로드
     }
 
 
     val tabSelectedListener = object : TabLayout.OnTabSelectedListener {
         override fun onTabSelected(tab: TabLayout.Tab?) {
-            currentTab = tab?.position ?: 0
-            loadOrders()
+            currentTab = tab?.position ?: 0 // 현재 탭 업데이트
+            loadOrders() // 주문 목록 다시 로드
         }
         override fun onTabUnselected(tab: TabLayout.Tab?) {}
         override fun onTabReselected(tab: TabLayout.Tab?) {}
+    }
+    fun onDeliveryNavigated() {
+        _navigateToDelivery.value = false // 배달 화면 이동 후 플래그 리셋
     }
 
     data class AcceptButtonState(val text: String, val colorResId: Int)
