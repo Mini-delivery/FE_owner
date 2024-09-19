@@ -21,7 +21,7 @@ import java.io.IOException // IOException import 추가
 import com.example.minidelivery.ui.main.MainActivity
 import com.example.minidelivery.ui.done.DoneActivity
 
-class ManageDeliveryActivity : AppCompatActivity() {
+class DeliveryActivity : AppCompatActivity() {
 
     private lateinit var tabLayout: TabLayout
     private lateinit var webView: WebView
@@ -157,13 +157,13 @@ class ManageDeliveryActivity : AppCompatActivity() {
             override fun onFailure(call: Call, e: IOException) {
                 e.printStackTrace()
                 runOnUiThread {
-                    Toast.makeText(this@ManageDeliveryActivity, "명령 전송 실패", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DeliveryActivity, "명령 전송 실패", Toast.LENGTH_SHORT).show()
                 }
             }
 
             override fun onResponse(call: Call, response: Response) {
                 runOnUiThread {
-                    Toast.makeText(this@ManageDeliveryActivity, successMessage, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@DeliveryActivity, successMessage, Toast.LENGTH_SHORT).show()
                 }
             }
         })

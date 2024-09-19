@@ -44,11 +44,13 @@
         android:layout_marginTop="16dp">
 
         <com.google.android.material.chip.Chip
+            android:id="@+id/chipLatest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="최신순"/>
 
         <com.google.android.material.chip.Chip
+            android:id="@+id/chipOldest"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="과거순"/>

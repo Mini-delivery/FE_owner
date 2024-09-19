@@ -29,7 +29,7 @@ class DetailActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_order_details)
+        setContentView(R.layout.activity_details)
 
         // ViewModel 초기화
         viewModel = ViewModelProvider(this).get(DetailViewModel::class.java)

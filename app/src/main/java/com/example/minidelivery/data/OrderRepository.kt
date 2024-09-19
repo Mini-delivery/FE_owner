@@ -4,18 +4,24 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class OrderRepository private constructor() {
+
     // 처리 중인 주문 목록
     private val processingOrders = mutableListOf<Order>()
-
+    // 조리 중인 주문 목록
+    private val cookingOrders = mutableListOf<Order>()
+    // 조리 완료된 주문 목록
+    private val cookedOrders = mutableListOf<Order>()
     // 배달 중인 주문 목록
     private val deliveringOrders = mutableListOf<Order>()
+    // 배달 완료된 주문 목록
+    private val completedOrders = mutableListOf<Order>()
+    // 취소된 주문 목록
+    private val cancelledOrders = mutableListOf<Order>()
 
-    // 현재 주문 상태 플로우
-    private val _currentOrder = MutableStateFlow<Order?>(null)
-    val currentOrder: StateFlow<Order?> = _currentOrder
 
     // 초기 데이터 로드
     fun loadInitialData() {
+        // 초기 데이터 로드 (더미 데이터)
         processingOrders.add(
             Order(
                 id = "1",
@@ -27,37 +33,43 @@ class OrderRepository private constructor() {
                 status = OrderStatus.READY
             )
         )
-        _currentOrder.value = processingOrders.firstOrNull()
     }
+
 
     // 처리 중인 주문 목록 반환
     fun getProcessingOrders(): List<Order> = processingOrders
-
+    // 조리 중인 주문 목록 반환
+    fun getCookingOrders(): List<Order> = cookingOrders
+    // 조리 완료된 주문 목록 반환
+    fun getCookedOrders(): List<Order> = cookedOrders
     // 배달 중인 주문 목록 반환
     fun getDeliveringOrders(): List<Order> = deliveringOrders
+    // 배달 완료된 주문 목록 반환
+    fun getCompletedOrders(): List<Order> = completedOrders
+
+
 
     // 주문 업데이트
     fun updateOrder(order: Order) {
         when (order.status) {
             OrderStatus.COOKING -> {
-                // 조리 중 상태로 업데이트
-                processingOrders.find { it.id == order.id }?.status = OrderStatus.COOKING
-            }
-
-            OrderStatus.DELIVERING -> {
-                // 배달 중 상태로 업데이트
                 processingOrders.removeIf { it.id == order.id }
+                cookingOrders.add(order)
+            }
+            OrderStatus.COOKED -> {
+                cookingOrders.removeIf { it.id == order.id }
+                cookedOrders.add(order)
+            }
+            OrderStatus.DELIVERING -> {
+                cookedOrders.removeIf { it.id == order.id }
                 deliveringOrders.add(order)
             }
-
             OrderStatus.COMPLETED -> {
-                // 완료 상태로 업데이트
                 deliveringOrders.removeIf { it.id == order.id }
+                completedOrders.add(order)
             }
-
             else -> {}
         }
-        _currentOrder.value = order
     }
 
     // ID로 주문 찾기

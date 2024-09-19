@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.minidelivery.R
 import com.example.minidelivery.ui.main.MainActivity
-import com.example.minidelivery.ui.delivery.ManageDeliveryActivity
+import com.example.minidelivery.ui.delivery.DeliveryActivity
 
 class DoneViewModel : ViewModel() {
     // 완료된 주문 목록
@@ -34,7 +34,7 @@ class DoneViewModel : ViewModel() {
 
     // 배달 관리로 이동
     fun navigateToManageDelivery(activity: Activity) {
-        val intent = Intent(activity, ManageDeliveryActivity::class.java)
+        val intent = Intent(activity, DeliveryActivity::class.java)
         val options = ActivityOptionsCompat.makeCustomAnimation(activity, R.anim.fade_in, R.anim.fade_out)
         activity.startActivity(intent, options.toBundle())
     }
