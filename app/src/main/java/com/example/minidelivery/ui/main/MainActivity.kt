@@ -10,10 +10,12 @@ import com.example.minidelivery.ui.delivery.DeliveryActivity
 import com.example.minidelivery.ui.detail.DetailActivity
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import androidx.cardview.widget.CardView
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.minidelivery.data.Order
+import com.example.minidelivery.data.OrderStatus
+import com.example.minidelivery.order.OrderAdapter
 import com.google.android.material.chip.ChipGroup
 
 class MainActivity : AppCompatActivity() {
@@ -22,14 +24,10 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tabLayout: TabLayout // 탭 레이아웃 선언
     private lateinit var chipGroup: ChipGroup // 칩 그룹 선언
     private lateinit var bottomNavigation: BottomNavigationView // 하단 네비게이션 선언
-    private lateinit var orderCardView: CardView // 주문 카드 뷰 선언
-    private lateinit var acceptButton: Button // 접수/조리완료 버튼 선언
-    private lateinit var timeTextView: TextView // 시간 텍스트뷰 선언
-    private lateinit var orderSummaryTextView: TextView // 주문 요약 텍스트뷰 선언
-    private lateinit var addressTextView: TextView // 주소 텍스트뷰 선언
-    private lateinit var paymentStatusTextView: TextView // 결제 상태 텍스트뷰 선언
-    private lateinit var priceTextView: TextView // 가격 텍스트뷰 선언
+    private lateinit var orderRecyclerView: RecyclerView // RecyclerView 선언
+    private lateinit var orderAdapter: OrderAdapter // Adapter 선언
 
+    // 액티비티 생성 시 호출되는 함수
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main) // 레이아웃 설정
@@ -37,11 +35,7 @@ class MainActivity : AppCompatActivity() {
         initViews() // 뷰 초기화
         setupUI() // UI 설정
         observeViewModel() // ViewModel 관찰 설정
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.loadOrders() // 화면이 다시 보일 때마다 주문 목록 새로고침
+        viewModel.loadOrders() // 초기 데이터 로드
     }
 
     // 뷰 초기화 함수
@@ -49,76 +43,86 @@ class MainActivity : AppCompatActivity() {
         tabLayout = findViewById(R.id.tabLayout)
         chipGroup = findViewById(R.id.chipGroup)
         bottomNavigation = findViewById(R.id.bottomNavigation)
-        orderCardView = findViewById(R.id.orderCardView)
-        acceptButton = findViewById(R.id.acceptButton)
-        timeTextView = findViewById(R.id.timeTextView)
-        orderSummaryTextView = findViewById(R.id.orderSummaryTextView)
-        addressTextView = findViewById(R.id.addressTextView)
-        paymentStatusTextView = findViewById(R.id.paymentStatusTextView)
-        priceTextView = findViewById(R.id.priceTextView)
+        orderRecyclerView = findViewById(R.id.orderRecyclerView)
     }
 
     // UI 설정 함수
     private fun setupUI() {
-        tabLayout.addOnTabSelectedListener(viewModel.tabSelectedListener) // 탭 선택 리스너 설정
+        setupRecyclerView() // RecyclerView 설정
+        setupTabLayout() // 탭 레이아웃 설정
+        setupChipGroup() // 칩 그룹 설정
+        setupBottomNavigation() // 하단 네비게이션 설정
+    }
 
+    // RecyclerView 설정 함수
+    private fun setupRecyclerView() {
+        orderAdapter = OrderAdapter( // OrderAdapter 초기화
+            this::onOrderItemClick,
+            this::onStatusButtonClick
+        )
+        orderRecyclerView.adapter = orderAdapter // 어댑터 설정
+        orderRecyclerView.layoutManager = LinearLayoutManager(this) // 레이아웃 매니저 설정
+        orderRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL)) // 구분선 추가
+    }
+
+    // 탭 레이아웃 설정 함수
+    private fun setupTabLayout() {
+        // 탭 선택 리스너 설정
+        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+            override fun onTabSelected(tab: TabLayout.Tab?) {
+                viewModel.onTabSelected(tab?.position ?: 0)
+            }
+            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            override fun onTabReselected(tab: TabLayout.Tab?) {}
+        })
+    }
+
+    // 칩 그룹 설정 함수
+    private fun setupChipGroup() {
         chipGroup.setOnCheckedChangeListener { _, checkedId ->
             when (checkedId) {
                 R.id.chipLatest -> viewModel.setSortOrder(SortOrder.LATEST) // 최신순 정렬
                 R.id.chipOldest -> viewModel.setSortOrder(SortOrder.OLDEST) // 과거순 정렬
             }
         }
+    }
 
+    // 하단 네비게이션 설정 함수
+    private fun setupBottomNavigation() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> true
+                R.id.nav_home -> true // 홈 화면
                 R.id.nav_delivery -> {
-                    startActivity(Intent(this, DeliveryActivity::class.java)) // 배달 관리로 이동
+                    startActivity(Intent(this, DeliveryActivity::class.java)) // 배달 관리 화면으로 이동
                     true
                 }
                 R.id.nav_done -> {
-                    startActivity(Intent(this, DoneActivity::class.java)) // 완료 내역으로 이동
+                    startActivity(Intent(this, DoneActivity::class.java)) // 완료 내역 화면으로 이동
                     true
                 }
                 else -> false
             }
         }
-
-        acceptButton.setOnClickListener {
-            viewModel.onAcceptButtonClick() // 접수/조리완료 버튼 클릭 처리
-        }
-
-        orderCardView.setOnClickListener {
-            viewModel.currentOrder.value?.let { order ->
-                val intent = Intent(this, DetailActivity::class.java).apply {
-                    putExtra("orderId", order.id) // 주문 ID 전달
-                    putExtra("orderStatus", order.status.name) // 주문 상태 전달
-                }
-                startActivityForResult(intent, ORDER_DETAILS_REQUEST_CODE) // 상세 화면으로 이동
-            }
-        }
     }
 
+    // 주문 아이템 클릭 리스너
+    private fun onOrderItemClick(order: Order) {
+        val intent = Intent(this, DetailActivity::class.java).apply {
+            putExtra("orderId", order.id) // 주문 ID 전달
+            putExtra("orderStatus", order.status.name) // 주문 상태 전달
+        }
+        startActivityForResult(intent, ORDER_DETAILS_REQUEST_CODE) // 상세 화면으로 이동
+    }
+
+    // 상태 버튼 클릭 리스너
+    private fun onStatusButtonClick(order: Order) {
+        viewModel.updateOrderStatus(order) // 주문 상태 업데이트
+    }
 
     // ViewModel 관찰 함수
     private fun observeViewModel() {
-        viewModel.currentOrder.observe(this) { order ->
-            order?.let {
-                timeTextView.text = it.time // 시간 설정
-                orderSummaryTextView.text = it.summary // 주문 요약 설정
-                addressTextView.text = it.address // 주소 설정
-                paymentStatusTextView.text = it.paymentStatus // 결제 상태 설정
-                priceTextView.text = it.price // 가격 설정
-            }
-        }
-
-        viewModel.orderCardVisibility.observe(this) { isVisible ->
-            orderCardView.visibility = if (isVisible) View.VISIBLE else View.GONE // 주문 카드 표시 여부 설정
-        }
-
-        viewModel.acceptButtonState.observe(this) { state ->
-            acceptButton.text = state.text // 버튼 텍스트 업데이트
-            acceptButton.setBackgroundColor(getColor(state.colorResId)) // 버튼 색상 업데이트
+        viewModel.orders.observe(this) { orders ->
+            orderAdapter.updateOrders(orders) // 주문 목록 업데이트
         }
 
         viewModel.navigateToDelivery.observe(this) { shouldNavigate ->
@@ -133,13 +137,11 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == ORDER_DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
-            data?.getStringExtra("newStatus")?.let { newStatus ->
-                viewModel.updateOrderStatus(newStatus) // 상세 화면에서 변경된 주문 상태 업데이트
-            }
+            viewModel.loadOrders() // 주문 목록 새로고침
         }
     }
 
     companion object {
-        const val ORDER_DETAILS_REQUEST_CODE = 1001 // DetailActivity 요청 코드
+        const val ORDER_DETAILS_REQUEST_CODE = 1001  // DetailActivity 요청 코드
     }
 }

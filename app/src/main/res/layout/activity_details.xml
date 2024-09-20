@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:background="#FFFFFF">
 
@@ -30,7 +30,7 @@
             android:layout_gravity="center"
             android:text="주문상세"
             android:textSize="18sp"
-            android:textStyle="bold"
+            android:fontFamily="@font/pretendard_bold"
             android:gravity="center" />
     </androidx.appcompat.widget.Toolbar>
 
@@ -39,62 +39,30 @@
         android:layout_height="1dp"
         android:background="#EEEEEE" />
 
-    <LinearLayout
+
+    <!--item_order의 recyclerView-->
+
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="#F8F8F8">
+        android:text="주문 목록"
+        android:textSize="16sp"
+        android:fontFamily="@font/pretendard_bold"
+        android:padding="16dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="UGV 배달"
-            android:textSize="14sp"
-            android:textColor="#888888" />
-
-        <TextView
-            android:id="@+id/orderSummaryTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="연어 샐러드 외 1개"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/addressTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="삼선동 SK뷰 아파트 1301동 1804호"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
-
-        <TextView
-            android:id="@+id/paymentStatusTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="결제완료 21,200원"
-            android:textSize="14sp"
-            android:layout_marginTop="4dp" />
-
-        <Button
-            android:id="@+id/deliveryStatusButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="접수"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FFA000"
-            android:layout_gravity="end"
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orderListRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="요청사항"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:fontFamily="@font/pretendard_bold"
         android:padding="16dp" />
 
     <LinearLayout
@@ -108,6 +76,7 @@
             android:layout_height="wrap_content"
             android:text="가게"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:textColor="#888888" />
 
         <TextView
@@ -117,6 +86,7 @@
             android:layout_weight="1"
             android:text="리뷰이벤트 참여합니다~"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:layout_marginStart="16dp" />
     </LinearLayout>
 
@@ -131,6 +101,7 @@
             android:layout_height="wrap_content"
             android:text="배달"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:textColor="#888888" />
 
         <TextView
@@ -140,6 +111,7 @@
             android:layout_weight="1"
             android:text="문 앞에 놓아주세요!"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:layout_marginStart="16dp" />
     </LinearLayout>
 
@@ -148,7 +120,7 @@
         android:layout_height="wrap_content"
         android:text="주문서"
         android:textSize="16sp"
-        android:textStyle="bold"
+        android:fontFamily="@font/pretendard_bold"
         android:padding="16dp" />
 
     <LinearLayout
@@ -163,6 +135,7 @@
             android:layout_weight="1"
             android:text="메뉴"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:textColor="#888888" />
 
         <TextView
@@ -170,6 +143,7 @@
             android:layout_height="wrap_content"
             android:text="수량"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:textColor="#888888"
             android:layout_marginEnd="36dp" />
 
@@ -178,14 +152,23 @@
             android:layout_height="wrap_content"
             android:text="금액"
             android:textSize="14sp"
+            android:fontFamily="@font/pretendard_bold"
             android:textColor="#888888" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/orderItemsContainer"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/orderItemsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <!-- 주문 항목들이 여기에 동적으로 추가됩니다 -->
-    </LinearLayout>
+        android:padding="16dp" />
+
+    <Button
+        android:id="@+id/deliveryStatusButton"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="배달 상태"
+        android:fontFamily="@font/pretendard_bold"
+        android:layout_marginTop="16dp" />
+
 </LinearLayout>

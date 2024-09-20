@@ -11,18 +11,18 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
+import androidx.lifecycle.ViewModelProvider
 import com.example.minidelivery.R
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import okhttp3.*
 import java.io.IOException // IOException import 추가
-
-// MainActivity와 CompletedOrdersActivity의 패키지 경로에 맞게 import 추가
 import com.example.minidelivery.ui.main.MainActivity
 import com.example.minidelivery.ui.done.DoneActivity
 
 class DeliveryActivity : AppCompatActivity() {
 
+    private lateinit var viewModel: DeliveryViewModel // ViewModel 선언
     private lateinit var tabLayout: TabLayout
     private lateinit var webView: WebView
     private lateinit var bottomNavigation: BottomNavigationView
@@ -33,6 +33,7 @@ class DeliveryActivity : AppCompatActivity() {
     private lateinit var btnStop: Button
     private lateinit var btnAuto: Button
     private lateinit var btnRefresh: Button
+    private lateinit var finishDeliveryButton: Button // 배달완료 버튼 추가
 
     private val client = OkHttpClient()
     private val handler = Handler(Looper.getMainLooper())
@@ -42,13 +43,17 @@ class DeliveryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_delivery)
 
+        viewModel = ViewModelProvider(this).get(DeliveryViewModel::class.java) // ViewModel 초기화
+
         initViews()
         setupListeners()
         setupWebView()
+        observeViewModel()
 
         bottomNavigation.selectedItemId = R.id.nav_delivery
     }
 
+    // 뷰 초기화 함수
     private fun initViews() {
         tabLayout = findViewById(R.id.tabLayout)
         webView = findViewById(R.id.webview)
@@ -60,8 +65,10 @@ class DeliveryActivity : AppCompatActivity() {
         btnStop = findViewById(R.id.btn_stop)
         btnAuto = findViewById(R.id.btn_auto)
         btnRefresh = findViewById(R.id.btn_refresh)
+        finishDeliveryButton = findViewById(R.id.finishDeliveryButton) // 배달완료 버튼 초기화
     }
 
+    // 리스너 설정 함수
     private fun setupListeners() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
@@ -76,6 +83,11 @@ class DeliveryActivity : AppCompatActivity() {
                 R.id.nav_delivery -> true
                 else -> false
             }
+        }
+
+        // 배달완료 버튼 클릭 리스너 추가
+        finishDeliveryButton.setOnClickListener {
+            viewModel.finishDelivery()
         }
 
         tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
@@ -101,6 +113,15 @@ class DeliveryActivity : AppCompatActivity() {
         setupTouchListener(btnBack, "back")
         setupTouchListener(btnLeft, "left")
         setupTouchListener(btnRight, "right")
+    }
+
+    // ViewModel 관찰 함수
+    private fun observeViewModel() {
+        viewModel.navigateToDone.observe(this) { shouldNavigate ->
+            if (shouldNavigate) {
+                navigateToCompletedOrders()
+            }
+        }
     }
 
     private fun setupTouchListener(button: Button, command: String) {
@@ -169,6 +190,7 @@ class DeliveryActivity : AppCompatActivity() {
         })
     }
 
+    // 홈 화면으로 이동하는 함수
     private fun navigateToHome() {
         val intent = Intent(this, MainActivity::class.java)
         val options = ActivityOptionsCompat.makeCustomAnimation(this,
@@ -179,6 +201,7 @@ class DeliveryActivity : AppCompatActivity() {
         finish()
     }
 
+    // 완료된 주문 화면으로 이동하는 함수
     private fun navigateToCompletedOrders() {
         val intent = Intent(this, DoneActivity::class.java)
         val options = ActivityOptionsCompat.makeCustomAnimation(this,
@@ -187,4 +210,5 @@ class DeliveryActivity : AppCompatActivity() {
         )
         startActivity(intent, options.toBundle())
     }
+
 }

@@ -1,81 +1,77 @@
 package com.example.minidelivery.ui.detail
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.minidelivery.data.OrderDetails
+import androidx.lifecycle.viewModelScope
+import com.example.minidelivery.data.Order
 import com.example.minidelivery.data.OrderItem
 import com.example.minidelivery.data.OrderRepository
 import com.example.minidelivery.data.OrderStatus
+import kotlinx.coroutines.launch
 
 class DetailViewModel : ViewModel() {
-    private val repository = OrderRepository.getInstance() // 리포지토리 인스턴스 가져오기
+    private val repository = OrderRepository.getInstance()
 
-    private val _orderDetails = MutableLiveData<OrderDetails>() // 주문 상세 정보 LiveData
-    val orderDetails: LiveData<OrderDetails> = _orderDetails
+    private val _selectedOrder = MutableLiveData<Order>()
+    val selectedOrder: LiveData<Order> = _selectedOrder
 
-    private val _orderStatus = MutableLiveData<OrderStatus>() // 주문 상태 LiveData
-    val orderStatus: LiveData<OrderStatus> = _orderStatus
+    private val _orderList = MutableLiveData<List<Order>>()
+    val orderList: LiveData<List<Order>> = _orderList
 
-    private val _navigateToDelivery = MutableLiveData<Boolean>() // 배달 화면 이동 LiveData
+    private val _orderItems = MutableLiveData<List<OrderItem>>()
+    val orderItems: LiveData<List<OrderItem>> = _orderItems
+
+    private val _navigateToDelivery = MutableLiveData<Boolean>()
     val navigateToDelivery: LiveData<Boolean> = _navigateToDelivery
 
-    private val _navigateToDone = MutableLiveData<Boolean>()
-    val navigateToDone: LiveData<Boolean> = _navigateToDone
-
-    private var currentOrderId: String? = null // 현재 주문 ID를 저장할 변수 추가
-
-    // 주문 상세 정보 로드 함수
-    fun loadOrderDetails(orderId: String?, orderStatusString: String?) {
-        currentOrderId = orderId // 현재 주문 ID 저장
-
-        // 실제 데이터를 로드하는 로직으로 변경⭐️
-        val order = repository.getOrderById(orderId ?: "") // 주문 ID로 주문 정보 가져오기
-        order?.let {
-            _orderDetails.value = OrderDetails(
-                summary = it.summary,
-                address = it.address,
-                paymentStatus = it.paymentStatus,
-                storeRequest = "리뷰이벤트 참여합니다~", // 실제 데이터로 대체 필요
-                deliveryRequest = "문 앞에 놓아주세요!", // 실제 데이터로 대체 필요
-                items = listOf(
-                    OrderItem("연어 샐러드", 1, "12,000원"),
-                    OrderItem("우삼겹 샐러드", 1, "10,200원")
-                ) // 실제 주문 항목 데이터로 대체 필요
-            )
-            _orderStatus.value = it.status // 주문 상태 설정
+    fun loadOrderDetails(orderId: String?) {
+        orderId?.let {
+            val order = repository.getOrderById(it)
+            order?.let {
+                _selectedOrder.value = it
+                _orderItems.value = it.items
+            }
         }
     }
 
-    // 주문 상태 업데이트 함수
-    fun updateOrderStatus() {
-        val currentStatus = _orderStatus.value ?: return
-        val newStatus = when (currentStatus) {
+    fun loadOrderList() {
+        viewModelScope.launch {
+            try {
+                val orders = repository.getAllOrders()
+                _orderList.value = orders ?: emptyList()
+            } catch (e: Exception) {
+                // 에러 처리
+                Log.e("DetailViewModel", "Error loading orders", e)
+                _orderList.value = emptyList()
+            }
+        }
+    }
+
+    fun selectOrder(order: Order) {
+        _selectedOrder.value = order
+        _orderItems.value = order.items
+    }
+
+    fun updateOrderStatus(order: Order? = null) {
+        val orderToUpdate = order ?: _selectedOrder.value ?: return
+        val newStatus = when (orderToUpdate.status) {
             OrderStatus.READY -> OrderStatus.COOKING
             OrderStatus.COOKING -> OrderStatus.COOKED
             OrderStatus.COOKED -> OrderStatus.DELIVERING
             OrderStatus.DELIVERING -> OrderStatus.COMPLETED
-            OrderStatus.COMPLETED -> OrderStatus.COMPLETED
+            OrderStatus.COMPLETED -> return
         }
-        _orderStatus.value = newStatus // 새 상태 설정
 
-        // 리포지토리에 주문 상태 업데이트
-        currentOrderId?.let { id ->
-            repository.getOrderById(id)?.let { order ->
-                repository.updateOrder(order.copy(status = newStatus))
-            }
-        }
+        val updatedOrder = orderToUpdate.copy(status = newStatus)
+        repository.updateOrder(updatedOrder)
+        _selectedOrder.value = updatedOrder
 
         if (newStatus == OrderStatus.DELIVERING) {
-            _navigateToDelivery.value = true // 배달 화면으로 이동 트리거
-        } else if (newStatus == OrderStatus.COMPLETED) {
-            _navigateToDone.value = true // 완료 화면으로 이동 트리거
+            _navigateToDelivery.value = true
         }
-    }
 
-    fun onBackButtonClicked(activity: DetailActivity) {
-        _orderStatus.value?.let { status ->
-            activity.finishWithResult(status) // 결과 설정 및 액티비티 종료
-        }
+        loadOrderList() // Refresh the order list
     }
 }
