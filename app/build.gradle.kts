@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
-    id ("kotlin-parcelize")
+    id("kotlin-parcelize")
 }
 
 android {
@@ -12,6 +12,7 @@ android {
 
     buildFeatures {
         dataBinding = true
+        viewBinding = true
     }
 
     defaultConfig {
@@ -33,12 +34,27 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
+
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    buildToolsVersion = "35.0.0"
+
+    packagingOptions {
+        resources {
+            excludes.add("META-INF/INDEX.LIST")
+            excludes.add("META-INF/io.netty.versions.properties")
+        }
+    }
+
+    dependenciesInfo {
+        includeInApk = true
     }
 }
 
@@ -60,6 +76,7 @@ dependencies {
 
     // Hilt
     implementation("com.google.dagger:hilt-android:2.44")
+    implementation(libs.firebase.firestore.ktx)
     kapt("com.google.dagger:hilt-android-compiler:2.44")
 
     // Navigation
@@ -69,9 +86,11 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // HiveMQ MQTT 클라이언트
+    implementation("com.hivemq:hivemq-mqtt-client:1.2.0")
 }
 
-// Allow references to generated code
 kapt {
     correctErrorTypes = true
 }

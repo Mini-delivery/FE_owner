@@ -96,7 +96,7 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun updateUI(order: Order) {
-        orderSummaryTextView.text = order.summary
+        orderSummaryTextView.text = order.order_name
         addressTextView.text = order.address
         paymentStatusTextView.text = order.paymentStatus
         storeRequestTextView.text = order.storeRequest

@@ -6,11 +6,11 @@ import kotlinx.parcelize.Parcelize // Parcelize 어노테이션 import
 @Parcelize // Parcelable 구현을 자동으로 생성
 data class Order( // 주문 데이터 클래스 정의
     val id: String, // 주문 ID
-    val time: String, // 주문 시간
-    val summary: String, // 주문 요약
+    val order_time: String, // 주문 시간
+    val order_name: String, // 주문 요약
     val address: String, // 배달 주소
     val paymentStatus: String, // 결제 상태
-    val price: String, // 주문 가격
+    val price: Int, // 주문 가격
     var status: OrderStatus, // 주문 상태 (변경 가능)
     val storeRequest: String, // 가게 요청사항 추가
     val deliveryRequest: String, // 배달 요청사항 추가

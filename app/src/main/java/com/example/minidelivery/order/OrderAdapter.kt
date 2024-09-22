@@ -39,11 +39,11 @@ class OrderAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val order = getItem(position)
-        holder.timeTextView.text = order.time
-        holder.orderSummaryTextView.text = order.summary
+        holder.timeTextView.text = order.order_time
+        holder.orderSummaryTextView.text = order.order_name
         holder.addressTextView.text = order.address
         holder.paymentStatusTextView.text = order.paymentStatus
-        holder.priceTextView.text = order.price
+        holder.priceTextView.text = order.price.toString()
         updateStatusButton(holder.statusButton, order.status)
 
         holder.itemView.setOnClickListener { onItemClick(order) }
