@@ -22,7 +22,8 @@ enum class OrderStatus { // 주문 상태 열거형 정의
     COOKING,    // 조리중
     COOKED,     // 조리완료
     DELIVERING, // 배달중
-    COMPLETED   // 배달완료
+    COMPLETED,  // 배달완료
+    DONE        // 완료
 }
 
 @Parcelize // Parcelable 구현을 자동으로 생성

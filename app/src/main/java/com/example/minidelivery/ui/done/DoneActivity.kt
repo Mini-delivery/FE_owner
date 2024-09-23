@@ -1,11 +1,16 @@
 package com.example.minidelivery.ui.done
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.minidelivery.data.Order
 import com.example.minidelivery.R
+import com.example.minidelivery.ui.delivery.DeliveryActivity
+import com.example.minidelivery.ui.main.MainActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.ChipGroup
 
@@ -28,37 +33,13 @@ class DoneActivity : AppCompatActivity() {
         initViews()
         setupListeners()
         setupRecyclerView()
-
-        // 들어온 주문 처리
-        handleIncomingOrder()
-
-        // 뒤로가기 처리 설정
-        setupBackPressedCallback()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        // 필요한 경우 추가 작업
+        observeViewModel()
+        handleCompletedOrder() // 완료된 주문 처리
     }
 
     override fun onResume() {
         super.onResume()
         bottomNavigation.selectedItemId = R.id.nav_done
-    }
-
-    override fun onPause() {
-        super.onPause()
-        // 필요한 경우 상태 저장
-    }
-
-    override fun onStop() {
-        super.onStop()
-        // 필요한 경우 리소스 해제
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // 리소스 정리
     }
 
     // 뷰 초기화
@@ -73,27 +54,58 @@ class DoneActivity : AppCompatActivity() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_home -> {
-                    viewModel.navigateToHome(this)
+                    viewModel.navigateToHome()
                     true
                 }
                 R.id.nav_done -> true
                 R.id.nav_delivery -> {
-                    viewModel.navigateToManageDelivery(this)
+                    viewModel.navigateToManageDelivery()
                     true
                 }
                 else -> false
             }
         }
+
+        chipGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.latestChip -> viewModel.setSortOrder(DoneViewModel.SortOrder.LATEST)
+                R.id.oldestChip -> viewModel.setSortOrder(order = DoneViewModel.SortOrder.OLDEST)
+            }
+        }
     }
 
-    // 들어온 주문 처리
-    private fun handleIncomingOrder() {
-        if (intent.getBooleanExtra("isNewOrder", false)) {
-            val summary = intent.getStringExtra("orderSummary") ?: return
-            val address = intent.getStringExtra("address") ?: ""
-            val price = intent.getStringExtra("price") ?: ""
-            viewModel.addNewOrder(Done(summary, address, price))
+    private fun handleCompletedOrder() {
+        intent.getParcelableExtra<Order>("completedOrder")?.let { order ->
+            viewModel.addCompletedOrder(order)
         }
+    }
+
+    private fun observeViewModel() {
+        viewModel.completedOrders.observe(this) { orders ->
+            (completedOrdersRecyclerView.adapter as DoneAdapter).updateOrders(orders)
+        }
+
+        viewModel.navigationEvent.observe(this) { event ->
+            when (event) {
+                is DoneViewModel.NavigationEvent.ToHome -> navigateToHome()
+                is DoneViewModel.NavigationEvent.ToDelivery -> navigateToDelivery()
+            }
+        }
+    }
+
+    // Main Activity로 이동
+    private fun navigateToHome() {
+        val intent = Intent(this, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+        startActivity(intent)
+        finish()
+    }
+
+    // Delivery Activity로 이동
+    private fun navigateToDelivery() {
+        val intent = Intent(this, DeliveryActivity::class.java)
+        val options = ActivityOptionsCompat.makeCustomAnimation(this, R.anim.fade_in, R.anim.fade_out)
+        startActivity(intent, options.toBundle())
     }
 
     // RecyclerView 설정
@@ -106,10 +118,5 @@ class DoneActivity : AppCompatActivity() {
         viewModel.completedOrders.observe(this) { orders ->
             adapter.updateOrders(orders)
         }
-    }
-
-    // 뒤로가기 처리 설정
-    private fun setupBackPressedCallback() {
-        onBackPressedDispatcher.addCallback(this, viewModel.backPressedCallback)
     }
 }

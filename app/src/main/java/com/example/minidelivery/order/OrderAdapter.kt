@@ -58,20 +58,24 @@ class OrderAdapter(
                 button.setBackgroundColor(ContextCompat.getColor(context, R.color.processing_color))
             }
             OrderStatus.COOKING -> {
-                button.text = "조리완료"
+                button.text = "조리중"
                 button.setBackgroundColor(ContextCompat.getColor(context, R.color.cooking_color))
             }
             OrderStatus.COOKED -> {
-                button.text = "배달시작"
+                button.text = "조리완료"
                 button.setBackgroundColor(ContextCompat.getColor(context, R.color.cooked_color))
             }
             OrderStatus.DELIVERING -> {
-                button.text = "배달완료"
+                button.text = "배달중"
                 button.setBackgroundColor(ContextCompat.getColor(context, R.color.delivering_color))
             }
             OrderStatus.COMPLETED -> {
-                button.text = "완료"
+                button.text = "배달완료"
                 button.setBackgroundColor(ContextCompat.getColor(context, R.color.completed_color))
+            }
+            OrderStatus.DONE -> {
+                button.text = "완료"
+                button.setBackgroundColor(ContextCompat.getColor(context, R.color.done_color))
                 button.isEnabled = false
             }
         }

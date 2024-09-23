@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityOptionsCompat
 import androidx.lifecycle.ViewModelProvider
 import com.example.minidelivery.R
+import com.example.minidelivery.data.Order
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.tabs.TabLayout
 import okhttp3.*
@@ -49,6 +50,7 @@ class DeliveryActivity : AppCompatActivity() {
         setupListeners()
         setupWebView()
         observeViewModel()
+        setupDeliveryCompleteButton()
 
         bottomNavigation.selectedItemId = R.id.nav_delivery
     }
@@ -68,6 +70,20 @@ class DeliveryActivity : AppCompatActivity() {
         finishDeliveryButton = findViewById(R.id.finishDeliveryButton) // 배달완료 버튼 초기화
     }
 
+    // 배달완료 버튼 설정
+    private fun setupDeliveryCompleteButton() {
+        findViewById<Button>(R.id.finishDeliveryButton).setOnClickListener {
+            val deliveringOrder = intent.getParcelableExtra<Order>("deliveringOrder")
+            deliveringOrder?.let {
+                viewModel.completeDelivery(it)
+                setResult(RESULT_OK, Intent().apply {
+                    putExtra("completedOrder", it)
+                })
+                finish()
+            }
+        }
+    }
+
     // 리스너 설정 함수
     private fun setupListeners() {
         bottomNavigation.setOnItemSelectedListener { menuItem ->
@@ -77,7 +93,7 @@ class DeliveryActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_done -> {
-                    navigateToCompletedOrders()
+                    navigateToDoneActivity()
                     true
                 }
                 R.id.nav_delivery -> true
@@ -119,7 +135,8 @@ class DeliveryActivity : AppCompatActivity() {
     private fun observeViewModel() {
         viewModel.navigateToDone.observe(this) { shouldNavigate ->
             if (shouldNavigate) {
-                navigateToCompletedOrders()
+                navigateToDoneActivity()
+                viewModel.onNavigatedToDone() // 네비게이션 완료 후 플래그 리셋
             }
         }
     }
@@ -202,7 +219,7 @@ class DeliveryActivity : AppCompatActivity() {
     }
 
     // 완료된 주문 화면으로 이동하는 함수
-    private fun navigateToCompletedOrders() {
+    private fun navigateToDoneActivity() {
         val intent = Intent(this, DoneActivity::class.java)
         val options = ActivityOptionsCompat.makeCustomAnimation(this,
             R.anim.fade_in,

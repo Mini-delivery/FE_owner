@@ -13,6 +13,7 @@
     <color name="delivering_color">#4CAF50</color>
     <color name="completed_color">#1063FF</color>
     <color name="cancelled_color">#FF0000</color>
+    <color name="done_color">#3A3636</color>
 
 
     <!--main color-->

@@ -61,14 +61,15 @@ class DetailViewModel : ViewModel() {
             OrderStatus.COOKING -> OrderStatus.COOKED
             OrderStatus.COOKED -> OrderStatus.DELIVERING
             OrderStatus.DELIVERING -> OrderStatus.COMPLETED
-            OrderStatus.COMPLETED -> return
+            OrderStatus.COMPLETED -> OrderStatus.DONE
+            OrderStatus.DONE -> return
         }
 
         val updatedOrder = orderToUpdate.copy(status = newStatus)
         repository.updateOrder(updatedOrder)
         _selectedOrder.value = updatedOrder
 
-        if (newStatus == OrderStatus.DELIVERING) {
+        if (newStatus == OrderStatus.COMPLETED) {
             _navigateToDelivery.value = true
         }
 

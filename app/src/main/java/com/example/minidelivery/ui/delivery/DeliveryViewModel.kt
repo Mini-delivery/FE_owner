@@ -3,6 +3,7 @@ package com.example.minidelivery.ui.delivery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.minidelivery.data.Order
 import com.example.minidelivery.data.OrderRepository
 import com.example.minidelivery.data.OrderStatus
 
@@ -19,5 +20,14 @@ class DeliveryViewModel : ViewModel() {
             repository.updateOrder(order.copy(status = OrderStatus.COMPLETED)) // 주문 상태를 배달완료로 변경
             _navigateToDone.value = true // 완료 화면으로 이동 트리거
         }
+    }
+
+    fun completeDelivery(order: Order) {
+        repository.updateOrder(order.copy(status = OrderStatus.COMPLETED))
+        _navigateToDone.value = true
+    }
+
+    fun onNavigatedToDone() {
+        _navigateToDone.value = false
     }
 }

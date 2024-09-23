@@ -24,14 +24,10 @@
         android:layout_marginTop="16dp">
 
         <com.google.android.material.tabs.TabItem
+            android:id="@+id/tabProcessing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="처리중"/>
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="조리중"/>
+            android:text="주문내역"/>
 
     </com.google.android.material.tabs.TabLayout>
 

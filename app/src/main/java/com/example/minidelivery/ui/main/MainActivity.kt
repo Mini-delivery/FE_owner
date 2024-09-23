@@ -2,8 +2,8 @@ package com.example.minidelivery.ui.main
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import androidx.activity.viewModels
+import android.os.Handler
+import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,7 +20,6 @@ import com.example.minidelivery.ui.detail.DetailActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.tabs.TabLayout
-
 
 
 class MainActivity : AppCompatActivity() {
@@ -44,6 +43,7 @@ class MainActivity : AppCompatActivity() {
 
         initViews()
         setupUI()
+        observeViewModel()
 
         // MainActivity에서 MQTT LiveData 관찰
         observeMqttOrders()
@@ -55,6 +55,7 @@ class MainActivity : AppCompatActivity() {
         mqttManager = MqttManager(this)
         mqttManager.connect()
     }
+
     // 초기 데이터 로드 함수
     fun observeMqttOrders() {
         mqttManager.orderLiveData.observeForever { orderData ->
@@ -62,18 +63,50 @@ class MainActivity : AppCompatActivity() {
                 Order(
                     id = System.currentTimeMillis().toString(),
                     order_time = orderData.order_date,
-                    order_name = it.store_id + " | "+ it.order_name,
-                    address = it.user_id + " | " +orderData.address,
+                    order_name = it.store_id + " | " + it.order_name,
+                    address = it.user_id + " | " + orderData.address,
                     paymentStatus = "결제완료",
                     price = orderData.price,
                     status = OrderStatus.READY, // 기본 상태 설정
                     storeRequest = "", // 가게 요청사항 (기본값)
                     deliveryRequest = "", // 배달 요청사항 (기본값)
-                    items = listOf(OrderItem(orderData.order_name, 1, "${orderData.price}원")) // 간단하게 아이템 설정
+                    items = listOf(
+                        OrderItem(
+                            orderData.order_name,
+                            1,
+                            "${orderData.price}원"
+                        )
+                    ) // 간단하게 아이템 설정
                 )
             }
 
             viewModel.addOrder(newOrder)
+        }
+    }
+
+    private fun observeViewModel() {
+        viewModel.orders.observe(this) { orders ->
+            orderAdapter.updateOrders(orders)
+        }
+
+        viewModel.navigateToDelivery.observe(this) { order ->
+            order?.let {
+                val intent = Intent(this, DeliveryActivity::class.java).apply {
+                    putExtra("deliveringOrder", it)
+                }
+                startActivityForResult(intent, DELIVERY_REQUEST_CODE)
+                viewModel.onDeliveryNavigated()
+            }
+        }
+
+        viewModel.navigateToDone.observe(this) { order ->
+            order?.let {
+                val intent = Intent(this, DoneActivity::class.java).apply {
+                    putExtra("completedOrder", it)
+                }
+                startActivity(intent)
+                viewModel.onDoneNavigated()
+            }
         }
     }
 
@@ -86,9 +119,22 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupUI() {
         setupRecyclerView()
-        setupTabLayout()
-        setupChipGroup()
         setupBottomNavigation()
+
+        // 더미 데이터 추가
+        val dummyOrder = Order(
+            id = "1",
+            order_time = "오후 4시 27분",
+            order_name = "스타벅스 | 아이스 아메리카노 외 4개",
+            address = "인천광역시 서구 마전동 29-4 1204동 4501호",
+            paymentStatus = "결제완료",
+            price = 21200,
+            status = OrderStatus.READY,
+            storeRequest = "",
+            deliveryRequest = "",
+            items = listOf(OrderItem("아이스 아메리카노", 5, "21,200원"))
+        )
+        viewModel.addOrder(dummyOrder)
     }
 
     private fun setupRecyclerView() {
@@ -98,27 +144,12 @@ class MainActivity : AppCompatActivity() {
         )
         orderRecyclerView.adapter = orderAdapter
         orderRecyclerView.layoutManager = LinearLayoutManager(this)
-        orderRecyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
-    }
-
-    private fun setupTabLayout() {
-        tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                viewModel.onTabSelected(tab?.position ?: 0)
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
-    }
-
-    private fun setupChipGroup() {
-        chipGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.chipLatest -> viewModel.setSortOrder(SortOrder.LATEST)
-                R.id.chipOldest -> viewModel.setSortOrder(SortOrder.OLDEST)
-            }
-        }
+        orderRecyclerView.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
     }
 
     private fun setupBottomNavigation() {
@@ -129,10 +160,12 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, DeliveryActivity::class.java))
                     true
                 }
+
                 R.id.nav_done -> {
                     startActivity(Intent(this, DoneActivity::class.java))
                     true
                 }
+
                 else -> false
             }
         }
@@ -150,19 +183,6 @@ class MainActivity : AppCompatActivity() {
         viewModel.updateOrderStatus(order)
     }
 
-    private fun observeViewModel() {
-        viewModel.orders.observe(this) { orders ->
-            orderAdapter.updateOrders(orders)
-        }
-
-        viewModel.navigateToDelivery.observe(this) { shouldNavigate ->
-            if (shouldNavigate) {
-                startActivity(Intent(this, DeliveryActivity::class.java))
-                viewModel.onDeliveryNavigated()
-            }
-        }
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         mqttManager.disconnect() // MQTT 연결 해제
@@ -170,12 +190,17 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ORDER_DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
+        if (requestCode == DELIVERY_REQUEST_CODE && resultCode == RESULT_OK) {
+            data?.getParcelableExtra<Order>("completedOrder")?.let { completedOrder ->
+                viewModel.completeDelivery(completedOrder)
+            }
+        } else if (requestCode == ORDER_DETAILS_REQUEST_CODE && resultCode == RESULT_OK) {
             viewModel.loadOrders()
         }
     }
 
     companion object {
         const val ORDER_DETAILS_REQUEST_CODE = 1001
+        const val DELIVERY_REQUEST_CODE = 1002
     }
 }

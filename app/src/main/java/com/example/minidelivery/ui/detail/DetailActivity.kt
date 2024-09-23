@@ -111,6 +111,7 @@ class DetailActivity : AppCompatActivity() {
             OrderStatus.COOKED -> "조리완료"
             OrderStatus.DELIVERING -> "배달중"
             OrderStatus.COMPLETED -> "배달완료"
+            OrderStatus.DONE -> "완료"
         }
     }
 
