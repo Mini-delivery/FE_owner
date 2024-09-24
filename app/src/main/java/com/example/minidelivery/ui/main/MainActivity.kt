@@ -122,7 +122,7 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
 
         // 더미 데이터 추가
-        val dummyOrder = Order(
+        /*val dummyOrder = Order(
             id = "1",
             order_time = "오후 4시 27분",
             order_name = "스타벅스 | 아이스 아메리카노 외 4개",
@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
             deliveryRequest = "",
             items = listOf(OrderItem("아이스 아메리카노", 5, "21,200원"))
         )
-        viewModel.addOrder(dummyOrder)
+        viewModel.addOrder(dummyOrder)*/
     }
 
     private fun setupRecyclerView() {

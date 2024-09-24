@@ -19,7 +19,7 @@ data class OrderData(
 )
 
 class MqttManager(mainActivity: MainActivity) {
-    private val serverUri = "tcp://172.30.1.64:1883" // 브로커 주소
+    private val serverUri = "tcp://192.168.137.82:1883" // 브로커 주소
     private val topic = "json" // 구독할 토픽
     private lateinit var mqttClient: Mqtt3AsyncClient
 
@@ -31,7 +31,7 @@ class MqttManager(mainActivity: MainActivity) {
             // Mqtt3Client 생성
             mqttClient = MqttClient.builder()
                 .useMqttVersion3() // MQTT v3 사용
-                .serverHost("172.30.1.64") // 호스트 주소
+                .serverHost("192.168.137.82") // 호스트 주소
                 .serverPort(1883) // 포트 번호
                 .buildAsync() // 비동기 클라이언트 생성
 

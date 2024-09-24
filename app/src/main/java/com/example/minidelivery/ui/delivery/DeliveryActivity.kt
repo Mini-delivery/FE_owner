@@ -175,7 +175,7 @@ class DeliveryActivity : AppCompatActivity() {
     private fun setupWebView() {
         val webSettings: WebSettings = webView.settings
         webSettings.javaScriptEnabled = true
-        val streamingUrl = "http://192.168.137.237:5000"
+        val streamingUrl = "http://192.168.137.141:5000"
         webView.loadUrl(streamingUrl)
     }
 
